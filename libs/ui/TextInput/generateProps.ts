@@ -166,7 +166,9 @@ const getSecureProps = (props: ITextInput, secure: boolean, setsecure: any) => {
   const cprops: IButton = { ...props.secureButtonProps };
   Object.assign(cprops, {
     prefix: {
-      name: secure ? "eye-off-outline" : "eye-outline",
+      name: secure
+        ? get(props, "iconSecureOff", "eye-off-outline")
+        : get(props, "iconSecure", "eye-outline"),
     },
     variant: "link",
     size: "custom",
@@ -251,9 +253,9 @@ const getSufixButtonProps = (props: ITextInput) => {
 
 const generateStyle = (props: ITextInput) => {
   let style: any = {
-    minHeight: 35,
+    minHeight: 36,
   };
-  let className = `flex flex-1 px-1 ios:mx-1 android:mt-1`;
+  let className = `flex flex-1 px-1 ios:mx-1 android:mt-1 ios:pt-1`;
   if (typeof Themes.inputStyle === "string") {
     className = `${className} ${Themes.inputStyle}`;
   } else {

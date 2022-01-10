@@ -125,7 +125,7 @@ export interface IFormStore {
 export interface IAlert {
   title: string;
   message?: string;
-  onOK: () => void;
+  onOK?: () => void;
   onCancel?: () => void;
   customize?: Omit<IAlertComponent, "title" | "message">;
 }

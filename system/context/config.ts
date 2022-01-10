@@ -1,4 +1,4 @@
-import { ActionTypes } from "libs/store/config";
+import { ActionTypes } from "../store/config";
 import { IConfigStore } from "../../types/global";
 import { createContext } from "react";
 

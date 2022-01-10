@@ -145,23 +145,23 @@ const generateOriginalStyle = (props: IButton) => {
       className = `${className} px-4 py-3`;
       break;
     default:
-      className = `${className} px-3 py-2`;
+      className = ` px-3 py-2 ${className}`;
       break;
   }
 
   if (props.round) {
     switch (props.size) {
       case "small":
-        className = `${className} rounded-full px-3`;
+        className = `px-3 ${className} rounded-full`;
         break;
       case "large":
-        className = `${className} rounded-full px-5`;
+        className = `px-5 ${className} rounded-full`;
         break;
       case "custom":
-        className = `${className} rounded-full px-1`;
+        className = `px-1 ${className} rounded-full`;
         break;
       default:
-        className = `${className} rounded-full px-4`;
+        className = `px-4 ${className} rounded-full`;
         break;
     }
   }
@@ -198,12 +198,50 @@ const generateStyle = (props: IButton) => {
       break;
     case "secondary":
       Object.assign(variantStyle, {
-        borderBottomColor: pSBC(0.2, lightenColor(bgColor, 3), "", true),
-        borderLeftColor: pSBC(0.2, lightenColor(bgColor, 3), "", true),
-        borderRightColor: pSBC(0.2, lightenColor(bgColor, 3), "", true),
-        borderTopColor: pSBC(0.2, lightenColor(bgColor, 3), "", true),
-        backgroundColor: pSBC(0.6, lightenColor(bgColor, 5), "", true),
-        borderWidth: 2,
+        borderBottomColor: pSBC(
+          0.2,
+          lightenColor(
+            style.borderBottomColor || style.borderColor || bgColor,
+            3
+          ),
+          "",
+          true
+        ),
+        borderLeftColor: pSBC(
+          0.2,
+          lightenColor(
+            style.borderLeftColor || style.borderColor || bgColor,
+            3
+          ),
+          "",
+          true
+        ),
+        borderRightColor: pSBC(
+          0.2,
+          lightenColor(
+            style.borderRightColor || style.borderColor || bgColor,
+            3
+          ),
+          "",
+          true
+        ),
+        borderTopColor: pSBC(
+          0.2,
+          lightenColor(style.borderTopColor || style.borderColor || bgColor, 3),
+          "",
+          true
+        ),
+        backgroundColor: pSBC(
+          0.6,
+          lightenColor(style.backgroundColor || bgColor, 5),
+          "",
+          true
+        ),
+        borderBottomWidth: style.borderBottomWidth || 2,
+        borderTopWidth: style.borderTopWidth || 2,
+        borderLeftWidth: style.borderLeftWidth || 2,
+        borderRightWidth: style.borderRightWidth || 2,
+        borderWidth: style.borderWidth || 2,
       });
       break;
     default:

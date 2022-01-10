@@ -75,7 +75,7 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
   const onPress = (e: any) => {
     setVisible(true);
   };
-  let className = `m-0`;
+  let className = `m-0 p-0 px-2`;
   if (typeof Themes.inputWrapperStyle === "string") {
     let cclassName = Themes.inputWrapperStyle
       .split(" ")
@@ -83,33 +83,35 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
       .join(" ");
     className = `${className} ${cclassName}`;
   }
-  if (typeof Themes.inputStyle === "string") {
-    className = `${className} ${Themes.inputStyle}`;
-  }
   if (!props.value) {
     className = `${className} text-gray-400`;
   }
   if (!props.value) {
     if (typeof Themes.placeholderStyle === "string") {
       className = `${className} ${Themes.placeholderStyle}`;
-    } else {
-      Object.assign(cprops.style, parseStyleToObject(Themes.placeholderStyle));
     }
   }
   className = `${className} ${get(props, "className", "")}`;
+
   const labelProps: IText = get(props, "labelProps", {});
-  let lclassName = `flex-grow p-1 py-2 ${get(
-    props,
-    "labelProps.className",
-    ""
-  )}`;
-  labelProps.className = lclassName;
+  const lstyle = {
+    lineHeight: 40,
+  };
+  let lclassName = `flex-grow ${get(props, "labelProps.className", "")}`;
+  if (typeof Themes.inputStyle === "string") {
+    lclassName = `${lclassName} ${Themes.inputStyle}`;
+  }
 
   if (!props.value) {
     if (typeof Themes.placeholderStyle === "string") {
-      className = `${className} ${Themes.placeholderStyle}`;
+      lclassName = `text-sm ${lclassName} ${Themes.placeholderStyle}`;
+    } else {
+      Object.assign(lstyle, parseStyleToObject(Themes.placeholderStyle));
     }
   }
+  labelProps.className = lclassName;
+  Object.assign(lstyle, parseStyleToObject(get(props, "labelProps.style", {})));
+  labelProps.style = lstyle;
 
   return {
     ...cprops,

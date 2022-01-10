@@ -1,6 +1,6 @@
 import { useAlertState } from "../../hooks/alert";
 import { get } from "lodash";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IButton } from "../Button";
 import { IModal } from "../Modal";
 
@@ -54,11 +54,11 @@ export const getTitleProps = () => {
 
 export const getContentProps = () => {
   const { state: alert } = useAlertState();
-  const cprops = get(alert, "messageProps", {});
+  const cprops = get(alert, "customize.messageProps", {});
   const children = get(alert, "message", "");
   const className = `text-lg text-center flex-grow text-base ${get(
     alert,
-    "messageProps.className",
+    "customize.messageProps.className",
     ""
   )}`;
 
@@ -71,14 +71,18 @@ export const getContentProps = () => {
 
 export const getButtonOkProps = () => {
   const { state: alert, close } = useAlertState();
-  const cprops = get(alert, "actionOkProps", {});
-  const className = `text-lg text-center px-8 text-base bg-blue-500 ${get(
+  const cprops = get(alert, "customize.actionOkProps", {});
+  const className = `text-lg text-center px-8 ${get(
     alert,
-    "actionOkProps.className",
+    "customize.actionOkProps.className",
     ""
   )}`;
 
-  const label = get(alert, "labelOk", "Ok");
+  const label = get(
+    alert,
+    "customize.labelOk",
+    get(alert, "customize.actionOkProps.label", "Ok")
+  );
   const onPress = () => {
     let onPress = get(alert, "onOK", null);
     if (onPress) {
@@ -97,14 +101,18 @@ export const getButtonOkProps = () => {
 
 export const getButtonCancelProps = () => {
   const { state: alert, close } = useAlertState();
-  const cprops = get(alert, "actionOkProps", {});
-  const className = `text-lg text-center px-8 text-base text-black ${get(
+  const cprops = get(alert, "customize.actionCancelProps", {});
+  const className = `text-lg text-center px-8 text-base text-black mr-2 ${get(
     alert,
-    "actionOkProps.className",
+    "customize.actionCancelProps.className",
     ""
   )}`;
 
-  const label = get(alert, "labelCancel", "Cancel");
+  const label = get(
+    alert,
+    "customize.labelCancel",
+    get(alert, "customize.actionCancelProps.label", "Cancel")
+  );
   const onPress = () => {
     let onPress = get(alert, "onCancel", null);
     if (onPress) {
@@ -114,11 +122,11 @@ export const getButtonCancelProps = () => {
   };
 
   return {
+    variant: "secondary",
     ...cprops,
     onPress,
     label,
     className,
-    variant: "link",
   } as IButton;
 };
 

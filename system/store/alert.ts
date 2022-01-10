@@ -17,8 +17,10 @@ export const INITIAL_ALERT_STATE: IAlertStore = {
   init: false,
   title: "Alert",
   onOK: () => {},
+  onCancel: () => {},
   visible: false,
   mode: "alert",
+  customize: {},
 };
 
 const AlertStore = (state: IAlertStore, action: ActionTypes) => {

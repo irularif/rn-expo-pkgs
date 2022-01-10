@@ -1,4 +1,4 @@
-import { ActionTypes } from "libs/store/portal";
+import { ActionTypes } from "../store/portal";
 import { PortalType } from "../../types/global";
 import { createContext } from "react";
 

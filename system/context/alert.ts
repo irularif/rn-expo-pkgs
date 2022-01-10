@@ -1,4 +1,4 @@
-import { ActionTypes } from "libs/store/alert";
+import { ActionTypes } from "../store/alert";
 import { IAlertStore } from "../../types/global";
 import { createContext } from "react";
 

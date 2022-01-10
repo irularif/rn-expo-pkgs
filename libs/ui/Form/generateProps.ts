@@ -1,3 +1,6 @@
+import { cloneDeep, debounce, get, set } from "lodash";
+import { useEffect, useRef, useState } from "react";
+import { IForm } from ".";
 import { IFormState, IFormStore } from "../../../types/global";
 import { trimObject } from "../../utils/misc";
 import validate, {
@@ -5,9 +8,6 @@ import validate, {
   prepareDataForValidation,
   yupToFormErrors,
 } from "../../utils/validation";
-import { cloneDeep, debounce, get, set } from "lodash";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { IForm } from ".";
 import { IView } from "../View";
 
 const INITIAL_FORM_STATE: IFormState = {

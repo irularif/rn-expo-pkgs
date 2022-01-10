@@ -57,13 +57,11 @@ const RenderRightAction = (props: ITopBar) => {
   return null;
 };
 const RenderChildren = (props: ITopBar) => {
+  const titleProps = getTitleProps(props);
   if (props.children) {
     return props.children;
-  } else if (!!props.title) {
-    const titleProps = getTitleProps(props);
-    return <Text {...titleProps} />;
   }
-  return null;
+  return <Text {...titleProps} />;
 };
 
 export default TopBar;

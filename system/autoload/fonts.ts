@@ -63,6 +63,7 @@ const generateFontStyle = (source: IFontSource) => {
     };
     FontNames[name] = fname;
   });
+  // console.log(FontNames);
 };
 
 export const FontSources: any = generateFonts();

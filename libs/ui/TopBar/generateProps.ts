@@ -3,7 +3,6 @@ import { back } from "../../utils/navigation";
 import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { get } from "lodash";
 import { NativeModules } from "react-native";
-import { EdgeInsets } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ITopBar } from ".";
 import { IButton } from "../Button";
@@ -87,8 +86,10 @@ const getSpinnerProps = (props: ITopBar) => {
   };
 };
 
-const generateStyle = (props: ITopBar, inset: EdgeInsets) => {
-  const style: any = {};
+const generateStyle = (props: ITopBar, inset: any) => {
+  const style: any = {
+    minHeight: 56,
+  };
   let className = `shadow z-10 flex flex-row items-center bg-white dark:bg-gray-900 ${get(
     props,
     "className",

@@ -7,9 +7,7 @@ const generatePages = () => {
   const pageScreens: any = [];
   const allPages: any = {};
   Object.assign(allPages, libsPages, pages);
-
-  // as
-  // asddasd
+  // asdaaaaaaaaa
   Object.keys(allPages).forEach((name) => {
     const fname =
       "/" + name.replace(/\$/, "/").replace(/([a-z])([A-Z])/g, "$1-$2");

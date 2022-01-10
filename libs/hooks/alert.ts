@@ -77,6 +77,9 @@ export const useAlertState = () => {
       ...nstate,
       visible: false,
     } as any);
+    setTimeout(() => {
+      init();
+    }, 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
   //#endregion

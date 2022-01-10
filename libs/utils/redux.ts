@@ -30,14 +30,16 @@ export function createStore<
     },
     ...options.reducers,
   };
+  const state = {
+    isLoading: false,
+    page: 0,
+    total_record: 0,
+    items: [],
+  };
+  Object.assign(state, initialState);
 
   Object.assign(options, {
-    initialState: {
-      isLoading: false,
-      page: 0,
-      total_record: 0,
-      items: [],
-    },
+    initialState: state,
     reducers,
   });
 

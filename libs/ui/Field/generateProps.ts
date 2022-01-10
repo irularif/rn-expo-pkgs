@@ -1,10 +1,9 @@
-import { FormContext } from "../../../system/context/form";
-import { IFormStore } from "../../../types/global";
-import { trimObject } from "../../utils/misc";
 import { get, set } from "lodash";
 import { useContext, useEffect } from "react";
 import { IField } from ".";
-import { TInputType } from "../TextInput";
+import { FormContext } from "../../../system/context/form";
+import { IFormStore } from "../../../types/global";
+import { trimObject } from "../../utils/misc";
 
 const getFieldProps = (props: IField) => {
   const { form: state }: IFormStore = useContext(FormContext) || ({} as any);

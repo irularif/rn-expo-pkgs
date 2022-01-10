@@ -1,7 +1,7 @@
 import AlertContext from "../../../system/context/alert";
 import { useAlertState } from "../../hooks/alert";
 import { IComponent } from "../../../types/global";
-import React from "react";
+import React, { ReactNode } from "react";
 import Button, { IButton } from "../Button";
 import Modal, { IModal } from "../Modal";
 import Text, { IText } from "../Text";
@@ -26,6 +26,7 @@ export interface IAlertComponent {
   actionCancelProps?: IButton;
   modalProps?: IModal;
   wrapperActionProps?: IView;
+  image?: ReactNode;
 }
 const Alert = ({ children }: IComponent) => {
   const alert = init();
@@ -49,8 +50,11 @@ const RenderAlert = () => {
 
   return (
     <Modal {...modalProps}>
+      {!!state.customize?.image && typeof state.customize?.image === "function"
+        ? state.customize?.image()
+        : state.customize?.image}
       <Text {...titleProps} />
-      <Text {...contentProps} />
+      {!!contentProps.children && <Text {...contentProps} />}
       <View {...wrapperActionProps}>
         {state.mode === "prompt" && <Button {...buttonCancelProps} />}
         <Button {...buttonOkProps} />

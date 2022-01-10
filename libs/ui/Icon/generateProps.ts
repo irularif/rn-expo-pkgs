@@ -18,8 +18,8 @@ const getIconProps = (props: IIcon) => {
 
 const getSVGProps = (props: IIcon) => {
   const cprops = { ...props };
-  cprops.width = get(props, "width", 20);
-  cprops.height = get(props, "height", 20);
+  cprops.width = get(props, "width", get(props, "size", 20));
+  cprops.height = get(props, "height", get(props, "size", 20));
 
   return cprops;
 };

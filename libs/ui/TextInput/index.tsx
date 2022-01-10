@@ -15,6 +15,7 @@ import getTextInputProps, {
   getSufixButtonProps,
   getWrapperProps,
 } from "./generateProps";
+import { SvgProps } from "react-native-svg";
 
 export type TInputType =
   | "text"
@@ -42,6 +43,8 @@ export interface ITextInput extends IComponent, TextInputProps {
   prefix?: IButton | JSX.Element;
   suffix?: IButton | JSX.Element;
   isError?: boolean;
+  iconSecure?: string | React.FC<SvgProps>;
+  iconSecureOff?: string | React.FC<SvgProps>;
 }
 
 const TextInput = (props: ITextInput) => {
