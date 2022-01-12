@@ -7,7 +7,6 @@ const generatePages = () => {
   const pageScreens: any = [];
   const allPages: any = {};
   Object.assign(allPages, libsPages, pages);
-  // asdaaaaaaaaa
   Object.keys(allPages).forEach((name) => {
     const fname =
       "/" + name.replace(/\$/, "/").replace(/([a-z])([A-Z])/g, "$1-$2");
@@ -17,6 +16,9 @@ const generatePages = () => {
       ...allPages[name].router,
     });
   });
+  // aaa
+  console.log(pageScreens);
+
   return pageScreens;
 };
 

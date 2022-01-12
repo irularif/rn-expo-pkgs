@@ -1,7 +1,13 @@
 import { Themes } from "../../../system/config";
 import { FormContext } from "../../../system/context/form";
 import { IFormStore } from "../../../types/global";
-import { lightenColor, lightOrDark, pSBC } from "../../utils/colors";
+import {
+  addAlphaToHEX,
+  lightenColor,
+  lightOrDark,
+  pSBC,
+  RGBToHex,
+} from "../../utils/colors";
 import { trimObject } from "../../utils/misc";
 import tailwind, {
   getColor,
@@ -349,9 +355,15 @@ const generateButtonStyle = (props: IButton, isPress: boolean) => {
 
   const stylePress: any = cloneDeep(style);
   if (props.variant === "link") {
-    Object.assign(stylePress, {
-      backgroundColor: pSBC(0.6, lightenColor(bgColor, 4), "", true),
-    });
+    if (!!props.className && props.className?.indexOf("bg-opacity") > -1) {
+      Object.assign(stylePress, {
+        backgroundColor: pSBC(0.6, lightenColor(bgColor, 4), "", true),
+      });
+    } else {
+      Object.assign(stylePress, {
+        backgroundColor: addAlphaToHEX(RGBToHex(ostyle.backgroundColor), 25),
+      });
+    }
   } else if (props.variant === "secondary") {
     Object.assign(stylePress, {
       backgroundColor: pSBC(0.7, lightenColor(bgColor, 1), "", true),

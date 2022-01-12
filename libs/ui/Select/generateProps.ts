@@ -327,7 +327,7 @@ export const getButtonProps = (
     setopen(!isOpen);
   };
 
-  let className = `m-0`;
+  let className = `m-0 p-0 px-2`;
   if (typeof Themes.inputWrapperStyle === "string") {
     let cclassName = Themes.inputWrapperStyle
       .split(" ")
@@ -335,27 +335,34 @@ export const getButtonProps = (
       .join(" ");
     className = `${className} ${cclassName}`;
   }
-  if (typeof Themes.inputStyle === "string") {
-    className = `${className} ${Themes.inputStyle}`;
-  }
   if (!props.value) {
     className = `${className} text-gray-400`;
   }
   if (!props.value) {
     if (typeof Themes.placeholderStyle === "string") {
       className = `${className} ${Themes.placeholderStyle}`;
-    } else {
-      Object.assign(cprops.style, parseStyleToObject(Themes.placeholderStyle));
     }
   }
   className = `${className} ${get(props, "className", "")}`;
+
   const labelProps: IText = get(props, "labelProps", {});
-  let lclassName = `flex-grow p-1 py-2 ${get(
-    props,
-    "labelProps.className",
-    ""
-  )}`;
+  const lstyle = {
+    lineHeight: 40,
+  };
+  let lclassName = `flex-grow ${get(props, "labelProps.className", "")}`;
+  if (typeof Themes.inputStyle === "string") {
+    lclassName = `${lclassName} ${Themes.inputStyle}`;
+  }
+  if (!props.value) {
+    if (typeof Themes.placeholderStyle === "string") {
+      lclassName = `text-sm ${lclassName} ${Themes.placeholderStyle}`;
+    } else {
+      Object.assign(lstyle, parseStyleToObject(Themes.placeholderStyle));
+    }
+  }
   labelProps.className = lclassName;
+  Object.assign(lstyle, parseStyleToObject(get(props, "labelProps.style", {})));
+  labelProps.style = lstyle;
 
   return {
     ...cprops,
@@ -507,7 +514,7 @@ export const getItemProps = (
     }, 100);
   };
 
-  let className = `m-0 rounded-none bg-white border-b border-gray-200 text-gray-600 active:bg-gray-200 active:border-b-2 active:border-gray-400`;
+  let className = `m-0 p-0 px-2 rounded-none bg-white border-b border-gray-200 text-gray-600 active:bg-gray-200 active:border-b-2 active:border-gray-400`;
 
   if (typeof Themes.inputStyle === "string") {
     className = `${className} ${Themes.inputStyle}`;

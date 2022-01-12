@@ -3,8 +3,10 @@ import { useConfig } from "../../hooks";
 import { trimObject } from "../../utils/misc";
 import { parseStyleToObject } from "../../utils/styles";
 import { get } from "lodash";
-import { StatusBarProps } from "react-native";
+import { StatusBar, StatusBarProps } from "react-native";
 import { IPage } from ".";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 export const getStatusBarProps = (props: IPage): StatusBarProps => {
   const { config } = useConfig();
@@ -16,6 +18,17 @@ export const getStatusBarProps = (props: IPage): StatusBarProps => {
   const statusBarStyle =
     cprops.barStyle ||
     (config.theme === "dark" ? "light-content" : "dark-content");
+
+  useFocusEffect(
+    useCallback(() => {
+      let barStyle =
+        cprops.barStyle ||
+        (config.theme === "dark" ? "light-content" : "dark-content");
+      if (barStyle) {
+        StatusBar.setBarStyle(barStyle);
+      }
+    }, [])
+  );
 
   return {
     translucent: true,

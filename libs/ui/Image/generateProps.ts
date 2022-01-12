@@ -14,7 +14,7 @@ const getImageProps = (props: IImage) => {
 
 const generateStyle = (props: IImage) => {
   const style: any = {};
-  const className = `w-40 h-40 bg-red-100 ${get(props, "className", "")}`;
+  const className = `w-40 h-40 ${get(props, "className", "")}`;
 
   Object.assign(style, tailwind(className), parseStyleToObject(props.style));
 

@@ -238,7 +238,7 @@ const BottomActionGroup = (props: any) => {
       <View {...wrapperBottomActionProps}>
         <Button {...cameraCaptureProps} />
         <Button {...saveProps} />
-        <View className="w-10" />
+        <View className="w-16" />
       </View>
     );
   }

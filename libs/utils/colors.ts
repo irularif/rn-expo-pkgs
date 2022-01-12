@@ -348,10 +348,14 @@ function lightOrDark(color: string) {
   }
 }
 
-const addAlpha = (color: string, opacity: number) => {
-  // coerce values so ti is between 0 and 1.
-  let _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
-  return color.slice(0, 6) + _opacity.toString(16).toUpperCase();
+const addAlphaToHEX = (color: string, opacity: number) => {
+  // coerce values so ti is between 0 and 100.
+  const percent = Math.max(0, Math.min(100, opacity)); // bound percent from 0 to 100
+  const intValue = Math.round((opacity / 100) * 255); // map percent to nearest integer (0 - 255)
+  const hexValue = intValue.toString(16); // get hexadecimal representation
+  let _opacity = hexValue.padStart(2, "0").toUpperCase(); // format with leading 0 and upper case characters
+  // let _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+  return color.slice(0, 7) + _opacity;
 };
 
 export {
@@ -361,5 +365,5 @@ export {
   darkenColor,
   pSBC,
   lightOrDark,
-  addAlpha,
+  addAlphaToHEX,
 };

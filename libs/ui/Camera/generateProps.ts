@@ -274,7 +274,7 @@ const getPermissionProps = (permissionState: any) => {
     label: "Enable Camera Access",
     onPress,
     variant: "link",
-    className: "text-blue-600",
+    className: "text-blue-600 bg-gray-100 bg-opacity-25",
   };
 
   return cprops;
@@ -296,7 +296,7 @@ const getFlashProps = (optionState: any) => {
         : undefined,
     label: flashMode === RNCamera.Constants.FlashMode.auto ? "Auto" : "",
     variant: "link",
-    className: "text-white text-base",
+    className: "text-white text-base bg-gray-100 bg-opacity-25 w-16 h-12",
   };
   const onPress = () => {
     let { flashMode } = option;
@@ -332,7 +332,7 @@ const getCameraTypeProps = (optionState: any) => {
       size: 35,
     },
     variant: "link",
-    className: "text-white text-base",
+    className: "text-white text-base bg-gray-100 bg-opacity-25 w-16 h-16",
     size: "custom",
   };
   const onPress = () => {
@@ -363,8 +363,8 @@ const getRatioProps = (optionState: any) => {
   const { ratio } = option;
   const cprops: IButton = {
     label: `[${ratio}]`,
-    // variant: "secondary",
-    className: "text-white text-base bg-black bg-opacity-20",
+    variant: "link",
+    className: "text-white text-base bg-gray-100 bg-opacity-25 w-16 h-12",
   };
   const onPress = () => {
     let { ratio } = option;
@@ -408,10 +408,13 @@ const getCameraCaptureProps = (
   const cprops: IButton = {
     prefix: {
       name: !!tempUri ? "reload" : "radio-button-on",
-      size: !!tempUri ? 35 : 65,
+      size: !!tempUri ? 35 : 70,
+      className: "pl-1 pt-1",
     },
     variant: "link",
-    className: `text-white text-base ${!!tempUri ? "" : "m-0"}`,
+    className: `text-white text-base bg-gray-100 bg-opacity-25 p-0 m-0 ${
+      !!tempUri ? "w-16 h-16" : "w-24 h-24 rounded-full"
+    }`,
     size: "custom",
     disabled: isLoading,
   };
@@ -536,7 +539,7 @@ const getImagePickerProps = (props: ICamera, tempUriState: any) => {
       size: 30,
     },
     variant: "link",
-    className: `text-white text-base ${
+    className: `text-white text-base bg-gray-100 bg-opacity-25 w-16 h-16 ${
       props.imagePicker === false ? "opacity-0" : "opacity-100"
     }`,
     size: "custom",
@@ -558,10 +561,11 @@ const getSaveImageProps = (props: ICamera, tempUriState: any) => {
   const cprops: IButton = {
     prefix: {
       name: "checkmark-circle",
-      size: 65,
+      size: 70,
+      className: "pl-1",
     },
     variant: "link",
-    className: `m-0 text-white text-base self-end`,
+    className: `m-0 text-white text-base self-end bg-gray-100 bg-opacity-25 rounded-full w-24 h-24`,
     size: "custom",
   };
 
@@ -582,7 +586,8 @@ export const getBackProps = (
       name: "arrow-back",
       size: 26,
     },
-    className: "text-white text-base bg-black bg-opacity-20",
+    variant: "link",
+    className: "text-white text-base bg-gray-100 bg-opacity-25 w-16 h-12",
   };
   const onPress = () => {
     Animated.timing(animate, {

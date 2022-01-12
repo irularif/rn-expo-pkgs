@@ -28,7 +28,8 @@ export const getReducer = () => {
       });
     }
   });
-
+  //aas
+  console.log(store, rootStore);
   return combineReducers(rootStore);
 };
 
