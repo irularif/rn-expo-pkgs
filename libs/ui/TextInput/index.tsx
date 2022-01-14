@@ -31,7 +31,8 @@ export type TInputType =
 
 export interface IPrefixSuffix extends IButton {}
 
-export interface ITextInput extends IComponent, TextInputProps {
+export interface ITextInput extends IComponent, Omit<TextInputProps, "value"> {
+  value?: string | number;
   type?: TInputType;
   // mask?: string;
   style?: StyleProp<TextStyle>;

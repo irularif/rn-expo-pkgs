@@ -1,7 +1,6 @@
 import { trimObject } from "../../utils/misc";
-import { parseStyleToObject } from "../../utils/styles";
+import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { get } from "lodash";
-import tailwind from "tailwind-rn";
 import { ICheckbox } from ".";
 import { IButton } from "../Button";
 import { IIcon } from "../Icon";

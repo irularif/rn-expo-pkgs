@@ -80,7 +80,8 @@ const getButtonProps = (props: IButton, pressState: any) => {
 const getTextProps = (props: IButton, pressState: any) => {
   const [isPress, _] = pressState;
   const cprops = { ...props.labelProps };
-  const style = generateTextStyle(props, isPress);
+  let className = `${cprops.className || ""}`;
+  const style = generateTextStyle(props, isPress, className);
 
   let children = props.children;
   if (typeof children !== "string") {
@@ -96,34 +97,36 @@ const getTextProps = (props: IButton, pressState: any) => {
 };
 
 const getLeftIconProps = (props: IButton) => {
-  const textStyle = generateTextStyle(props);
   const leftIcon: any = { ...props.prefix };
-  leftIcon.color = leftIcon?.color || textStyle?.color;
-  leftIcon.className = `${!!props.children || props.label ? "mr-1" : ""} ${
+  let className = `${!!props.children || props.label ? "mr-1" : ""} ${
     leftIcon.className || ""
   }`;
+  const textStyle = generateTextStyle(props, false, className);
+  leftIcon.color = leftIcon?.color || textStyle?.color;
+  leftIcon.style = textStyle;
 
   return leftIcon;
 };
 
 const getRightIconProps = (props: IButton) => {
-  const textStyle = generateTextStyle(props);
   const rightIcon: any = { ...props.suffix };
-  rightIcon.color = rightIcon?.color || textStyle?.color;
-  rightIcon.className = `${!!props.children || props.label ? "ml-1" : ""} ${
+  let className = `${!!props.children || props.label ? "ml-1" : ""} ${
     rightIcon.className || ""
   }`;
+  const textStyle = generateTextStyle(props, false, className);
+  rightIcon.color = rightIcon?.color || textStyle?.color;
+  rightIcon.style = textStyle;
 
   return rightIcon;
 };
 
 const getSpinnerProps = (props: IButton): ISpinner => {
   const cprops = { ...props.spinnerProps };
-  const textStyle = generateTextStyle(props);
-  const color = textStyle.color;
-  cprops.className = `${!!props.children || props.label ? "mr-1" : ""} ${
+  let className = `${!!props.children || props.label ? "mr-1" : ""} ${
     cprops.className || ""
   }`;
+  const textStyle = generateTextStyle(props, false, className);
+  const color = textStyle.color;
 
   return {
     ...cprops,
@@ -390,7 +393,11 @@ const generateButtonStyle = (props: IButton, isPress: boolean) => {
   }
 };
 
-const generateTextStyle = (props: IButton, isPress?: boolean) => {
+const generateTextStyle = (
+  props: IButton,
+  isPress?: boolean,
+  className = ""
+) => {
   let style = generateStyle(props);
   const activeStyle = generateActiveStyle(props);
   Object.assign(style, parseStyleToObject(props.labelProps?.style));
@@ -407,7 +414,7 @@ const generateTextStyle = (props: IButton, isPress?: boolean) => {
     "opacity",
   ];
   style = trimStyle(style, ex);
-  Object.assign(style, {
+  Object.assign(style, tailwind(className), {
     flexShrink: 1,
   });
 

@@ -18,7 +18,7 @@ const NavigationProvider = (props: IAppProvider) => {
     let AppRoutes = generatePages();
     const checkRole = (role: TRole[]) => {
       let canAccess = false;
-      if (role.length === 0) {
+      if (!props.role || role.length === 0) {
         canAccess = true;
       } else if (Array.isArray(props.role) && props.role.length > 0) {
         for (let r of props.role) {

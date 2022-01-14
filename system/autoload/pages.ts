@@ -17,8 +17,6 @@ const generatePages = () => {
     });
   });
   // aaa
-  console.log(pageScreens);
-
   return pageScreens;
 };
 

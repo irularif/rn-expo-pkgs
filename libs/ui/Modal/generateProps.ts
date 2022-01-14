@@ -197,11 +197,7 @@ const generateWrapperStyle = (props: IModal, animate: any) => {
 
 const generateRootWrapperStyle = (props: IModal, animate: any) => {
   const style = {};
-  Object.assign(
-    style,
-    tailwind("flex-initial bg-white shadow-md"),
-    parseStyleToObject(props?.wrapperProps?.rootStyle)
-  );
+  Object.assign(style, tailwind("flex-initial bg-white shadow-md"));
 
   if (props.position === "top") {
     Object.assign(style, tailwind("rounded-b-md"));
@@ -212,6 +208,12 @@ const generateRootWrapperStyle = (props: IModal, animate: any) => {
   } else {
     Object.assign(style, tailwind("rounded-t-md"));
   }
+
+  Object.assign(
+    style,
+    tailwind(props.wrapperProps?.rootClassName),
+    parseStyleToObject(props?.wrapperProps?.rootStyle)
+  );
 
   Object.assign(style, {
     elevation: props.visible ? get(style, "elevation", 0) : 0,

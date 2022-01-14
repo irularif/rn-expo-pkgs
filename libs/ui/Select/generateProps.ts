@@ -319,6 +319,7 @@ export const getButtonProps = (
   cprops.label = label;
   cprops.suffix = {
     name: "chevron-down",
+    ...props.suffix,
   };
   cprops.size = "custom";
   cprops.disabled = !get(props, "editable", true);
@@ -509,12 +510,12 @@ export const getItemProps = (
     setTimeout(() => {
       let value = getValue(props, item.item);
       if (props.onChange) {
-        props.onChange(value);
+        props.onChange(value, item.item);
       }
     }, 100);
   };
 
-  let className = `m-0 p-0 px-2 rounded-none bg-white border-b border-gray-200 text-gray-600 active:bg-gray-200 active:border-b-2 active:border-gray-400`;
+  let className = `m-0 p-0 px-2 rounded-t-none bg-white border-b border-gray-200 text-gray-600 active:bg-gray-200 active:border-b-2 active:border-gray-400`;
 
   if (typeof Themes.inputStyle === "string") {
     className = `${className} ${Themes.inputStyle}`;
@@ -605,6 +606,10 @@ export const getFilterProps = (
   cprops.placeholder = "Search";
 
   const className = `z-10 ${get(props, "filterProps.className", "")}`;
+  const wrapperProps = get(props, "filterProps.wrapperProps", {});
+  const wclassName = `mt-0 ${get(wrapperProps, "className", "")}`;
+  wrapperProps.className = wclassName;
+  cprops.wrapperProps = wrapperProps;
 
   return { ...cprops, className, autoFocus: true, onFocus, onBlur };
 };

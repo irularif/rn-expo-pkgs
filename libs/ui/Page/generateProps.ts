@@ -1,9 +1,9 @@
 import { Themes } from "../../../system/config";
 import { useConfig } from "../../hooks";
 import { trimObject } from "../../utils/misc";
-import { parseStyleToObject } from "../../utils/styles";
-import { get } from "lodash";
-import { StatusBar, StatusBarProps } from "react-native";
+import { getColor, parseStyleToObject } from "../../utils/styles";
+import { get, indexOf } from "lodash";
+import { Platform, StatusBar, StatusBarProps } from "react-native";
 import { IPage } from ".";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
@@ -12,8 +12,11 @@ export const getStatusBarProps = (props: IPage): StatusBarProps => {
   const { config } = useConfig();
   const cprops = { ...props.statusBarProps };
 
-  const statusBarBgColor =
-    cprops.backgroundColor || Themes.statusBarBgColor || "transparent";
+  const statusBarBgColor = !!Themes.statusBarBgColor
+    ? Themes.statusBarBgColor.indexOf("#") === -1
+      ? Themes.statusBarBgColor
+      : getColor(Themes.statusBarBgColor)
+    : "#ffffff00";
 
   const statusBarStyle =
     cprops.barStyle ||
@@ -21,11 +24,9 @@ export const getStatusBarProps = (props: IPage): StatusBarProps => {
 
   useFocusEffect(
     useCallback(() => {
-      let barStyle =
-        cprops.barStyle ||
-        (config.theme === "dark" ? "light-content" : "dark-content");
-      if (barStyle) {
-        StatusBar.setBarStyle(barStyle);
+      StatusBar.setBarStyle(statusBarStyle);
+      if (Platform.OS === "android") {
+        StatusBar.setBackgroundColor(statusBarBgColor);
       }
     }, [])
   );

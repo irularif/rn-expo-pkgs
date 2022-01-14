@@ -1,13 +1,12 @@
-import { trimObject } from "../../utils/misc";
-import { back } from "../../utils/navigation";
-import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { get } from "lodash";
 import { NativeModules } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ITopBar } from ".";
+import { trimObject } from "../../utils/misc";
+import { back } from "../../utils/navigation";
+import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { IButton } from "../Button";
 import { IView } from "../View";
-const { StatusBarManager } = NativeModules;
 
 const getTopBarProps = (props: ITopBar) => {
   const inset = useSafeAreaInsets();

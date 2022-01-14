@@ -1,13 +1,12 @@
-import { IItem as IBasicItem } from "../../../types/global";
 import React, { ReactNode } from "react";
 import {
-  KeyboardAvoidingView,
   ListRenderItemInfo,
-  SafeAreaView,
   TouchableOpacity,
   TouchableOpacityProps,
 } from "react-native";
+import { IItem as IBasicItem } from "../../../types/global";
 import Button, { IButton } from "../Button";
+import { IIcon } from "../Icon";
 import List, { IList as IOriList } from "../List";
 import Portal from "../Portal";
 import Text from "../Text";
@@ -31,9 +30,9 @@ export interface IFilterProps extends ITextInput {
   onFilter?: (filter: string) => void;
 }
 
-export interface ISelect extends IButton {
+export interface ISelect extends Omit<IButton, "suffix"> {
   value?: any;
-  onChange?: (value: any) => void;
+  onChange?: (value: any, item: any) => void;
   items?: ISelectItem[];
   labelPath?: string;
   valuePath?: string;
@@ -45,6 +44,7 @@ export interface ISelect extends IButton {
   filterProps?: IFilterProps;
   editable?: boolean;
   placeholder?: string;
+  suffix?: Partial<IIcon | JSX.Element | undefined>;
 }
 
 const Select = (props: ISelect) => {

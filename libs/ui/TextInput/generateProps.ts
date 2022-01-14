@@ -34,8 +34,8 @@ const getTextInputProps = (props: ITextInput, secure: boolean) => {
       pos += 1;
     }
 
-    if (!!value && pos + 1 > value?.length) {
-      pos = value?.length;
+    if (!!value && pos + 1 > String(value)?.length) {
+      pos = String(value)?.length;
     } else {
       pos = pos;
     }

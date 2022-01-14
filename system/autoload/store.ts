@@ -1,22 +1,7 @@
-import { applyMiddleware, combineReducers, createStore } from "redux";
-import thunkMiddleware from "redux-thunk";
-import api from "../../libs/utils/api";
 // @ts-ignore
 import * as store from "app/store/{*.ts,**/*.ts}";
-
-export const getActions = () => {
-  const rootActions = {};
-
-  Object.keys(store).forEach((name) => {
-    if (store[name]?._isStore) {
-      Object.assign(rootActions, {
-        [store[name].name]: store[name].actions,
-      });
-    }
-  });
-
-  return rootActions;
-};
+import { applyMiddleware, combineReducers, createStore } from "redux";
+import thunkMiddleware from "redux-thunk";
 
 export const getReducer = () => {
   const rootStore = {};
@@ -28,17 +13,12 @@ export const getReducer = () => {
       });
     }
   });
-  //aas
-  console.log(store, rootStore);
+  //aasaa
   return combineReducers(rootStore);
 };
 
-export const configureStore = (ExtraArgument: Object) => {
-  const thunkWithExtraArgument = thunkMiddleware.withExtraArgument({
-    api,
-    ...ExtraArgument,
-  });
-  const middlewareEnhancer = applyMiddleware(thunkWithExtraArgument);
+export const configureStore = (ExtraArgument: Array<any> = []) => {
+  const middlewareEnhancer = applyMiddleware(thunkMiddleware, ...ExtraArgument);
   const rootReducer = getReducer();
 
   const store = createStore(rootReducer, {}, middlewareEnhancer);

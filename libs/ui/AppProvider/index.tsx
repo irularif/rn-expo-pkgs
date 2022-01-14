@@ -1,30 +1,34 @@
 import { NavigationContainerProps } from "@react-navigation/core";
 import { NativeStackNavigatorProps } from "@react-navigation/native-stack/lib/typescript/src/types";
+import { MiddlewareArgs } from "app/config/midleware";
 import * as Font from "expo-font";
-import { IConfigStore, TRole } from "../../../types/global";
-import { FontSources } from "../../../system/autoload/fonts";
+import * as SplashScreen from "expo-splash-screen";
+import { configureStore } from "pkgs/system/autoload/store";
 import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Provider } from "react-redux";
+import { AnyAction, EmptyObject, Store } from "redux";
+import { FontSources } from "../../../system/autoload/fonts";
+import { IConfigStore, TRole } from "../../../types/global";
+import View from "../View";
 import ConfigProvider from "./ConfigProvider";
 import AppProviderLoading from "./Loading";
 import NavigationProvider from "./NavigationProvider";
-import * as SplashScreen from "expo-splash-screen";
-import View from "../View";
-import { Provider } from "react-redux";
-import { configureStore } from "../../../system/autoload/store";
-import { MiddlewareArgs } from "app/config/midleware";
-
-export const rootStore = configureStore(MiddlewareArgs);
 
 export interface IAppProvider {
-  role: TRole | TRole[];
+  role?: TRole | TRole[];
   RenderSplash?: () => JSX.Element;
   navigationProps?: Partial<NavigationContainerProps>;
   stackNavigatorProps?: Partial<NativeStackNavigatorProps>;
   onUpdateInstalled?: () => void | Promise<void>;
   disableAppCenter?: boolean;
   config?: Partial<IConfigStore>;
+  store?: Store<EmptyObject, AnyAction> & {
+    dispatch: unknown;
+  };
 }
+
+export const rootStore = configureStore(MiddlewareArgs);
 
 const AppProvider = (props: IAppProvider) => {
   const [appIsReady, setAppIsReady] = useState(false);
