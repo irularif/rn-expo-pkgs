@@ -21,6 +21,8 @@ const getListProps = (props: IList) => {
     });
   };
 
+  const containerStyle = generateContainerStyle(props);
+
   return {
     keyExtractor,
     windowSize: 8,
@@ -30,14 +32,27 @@ const getListProps = (props: IList) => {
     onScrollToIndexFailed,
     ...cprops,
     style,
+    contentContainerStyle: containerStyle,
     ref: setRef,
   } as FlatListProps<any>;
 };
 
 const generateStyle = (props: IList) => {
   let style: any = {};
-  let className = `flex-1 w-full ${get(props, "className", "")}`;
+  let className = `flex-grow w-full ${get(props, "className", "")}`;
   Object.assign(style, tailwind(className), parseStyleToObject(props.style));
+
+  return style;
+};
+
+const generateContainerStyle = (props: IList) => {
+  let style: any = {};
+  let className = `flex-grow ${get(props, "className", "")}`;
+  Object.assign(
+    style,
+    tailwind(className),
+    parseStyleToObject(props.contentContainerStyle)
+  );
 
   return style;
 };

@@ -1,6 +1,15 @@
 // @ts-ignore
 import * as store from "app/store/{*.ts,**/*.ts}";
-import { applyMiddleware, combineReducers, createStore } from "redux";
+import { MiddlewareArgs } from "app/config/midleware";
+import React from "react";
+import {
+  AnyAction,
+  applyMiddleware,
+  combineReducers,
+  createStore,
+  EmptyObject,
+  Store,
+} from "redux";
 import thunkMiddleware from "redux-thunk";
 
 export const getReducer = () => {
@@ -25,3 +34,12 @@ export const configureStore = (ExtraArgument: Array<any> = []) => {
 
   return store;
 };
+
+export const rootStoreRef: React.RefObject<
+  Store<EmptyObject, AnyAction> & {
+    dispatch: unknown;
+  }
+> = React.createRef();
+
+export const rootStore = ((rootStoreRef as any).current =
+  configureStore(MiddlewareArgs));

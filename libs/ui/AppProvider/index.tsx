@@ -1,9 +1,8 @@
 import { NavigationContainerProps } from "@react-navigation/core";
 import { NativeStackNavigatorProps } from "@react-navigation/native-stack/lib/typescript/src/types";
-import { MiddlewareArgs } from "app/config/midleware";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { configureStore } from "pkgs/system/autoload/store";
+import { rootStore } from "pkgs/system/autoload/store";
 import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
@@ -28,7 +27,7 @@ export interface IAppProvider {
   };
 }
 
-export const rootStore = configureStore(MiddlewareArgs);
+// const store = configureStore(MiddlewareArgs);
 
 const AppProvider = (props: IAppProvider) => {
   const [appIsReady, setAppIsReady] = useState(false);

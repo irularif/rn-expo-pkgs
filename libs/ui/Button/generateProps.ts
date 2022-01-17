@@ -148,10 +148,10 @@ const generateOriginalStyle = (props: IButton) => {
 
   switch (props.size) {
     case "small":
-      className = `${className} px-2 py-1`;
+      className = `px-2 py-1 ${className}`;
       break;
     case "large":
-      className = `${className} px-4 py-3`;
+      className = `px-4 py-3 ${className}`;
       break;
     default:
       className = ` px-3 py-2 ${className}`;
@@ -161,16 +161,16 @@ const generateOriginalStyle = (props: IButton) => {
   if (props.round) {
     switch (props.size) {
       case "small":
-        className = `px-3 ${className} rounded-full`;
+        className = `px-3 rounded-full ${className}`;
         break;
       case "large":
-        className = `px-5 ${className} rounded-full`;
+        className = `px-5 rounded-full ${className}`;
         break;
       case "custom":
-        className = `px-1 ${className} rounded-full`;
+        className = `px-1 rounded-full ${className}`;
         break;
       default:
-        className = `px-4 ${className} rounded-full`;
+        className = `px-4 rounded-full ${className}`;
         break;
     }
   }
@@ -412,8 +412,10 @@ const generateTextStyle = (
     "height",
     "shadow",
     "opacity",
+    "position",
   ];
   style = trimStyle(style, ex);
+
   Object.assign(style, tailwind(className), {
     flexShrink: 1,
   });

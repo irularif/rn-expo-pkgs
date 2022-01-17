@@ -71,18 +71,8 @@ const DatePickerIOS = (props: any) => {
       <Modal {...modalProps}>
         <DateTimePicker {...dateTimeProps} />
         <View className="flex-row justify-end">
-          <Button
-            label="CANCEL"
-            variant="link"
-            onPress={onCancel}
-            className="text-blue-500"
-          />
-          <Button
-            label="OK"
-            variant="link"
-            onPress={onSubmit}
-            className="text-blue-500"
-          />
+          <Button label="CANCEL" variant="link" onPress={onCancel} />
+          <Button label="OK" variant="link" onPress={onSubmit} />
         </View>
       </Modal>
     );

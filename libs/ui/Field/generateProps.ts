@@ -84,11 +84,11 @@ const getInputProps = (props: IField) => {
       props.inputProps?.onBlur(e);
     }
   };
-  const onChange = (e: any) => {
+  const onChange = (e: any, item: any) => {
     let value = getValue(e);
     onFieldChange(path, value);
     if (props.inputProps?.onChange) {
-      props.inputProps?.onChange(e as never);
+      props.inputProps?.onChange(e as never, item);
     }
     if (props.onChange) {
       props.onChange(value);

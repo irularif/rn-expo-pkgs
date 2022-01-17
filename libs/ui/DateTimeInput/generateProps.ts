@@ -84,9 +84,6 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
     className = `${className} ${cclassName}`;
   }
   if (!props.value) {
-    className = `${className} text-gray-400`;
-  }
-  if (!props.value) {
     if (typeof Themes.placeholderStyle === "string") {
       className = `${className} ${Themes.placeholderStyle}`;
     }
@@ -104,10 +101,13 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
 
   if (!props.value) {
     if (typeof Themes.placeholderStyle === "string") {
-      lclassName = `text-sm ${lclassName} ${Themes.placeholderStyle}`;
+      lclassName = `text-sm leading-10 ${lclassName} ${Themes.placeholderStyle}`;
     } else {
       Object.assign(lstyle, parseStyleToObject(Themes.placeholderStyle));
     }
+  }
+  if (!props.value) {
+    lclassName = `${lclassName} text-gray-400`;
   }
   labelProps.className = lclassName;
   Object.assign(lstyle, parseStyleToObject(get(props, "labelProps.style", {})));
