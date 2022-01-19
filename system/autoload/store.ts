@@ -22,7 +22,7 @@ export const getReducer = () => {
       });
     }
   });
-  //aasaaa
+  //aasa
   return combineReducers(rootStore);
 };
 

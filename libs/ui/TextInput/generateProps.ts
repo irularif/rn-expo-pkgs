@@ -277,7 +277,7 @@ const generateStyle = (props: ITextInput) => {
   if (props.type === "multiline") {
     cstyle = {
       textAlignVertical: "top",
-      minHeight: get(props, "numberOfLines", 0) * 20,
+      minHeight: get(props, "numberOfLines", 4) * 20,
     };
   } else {
     cstyle = {

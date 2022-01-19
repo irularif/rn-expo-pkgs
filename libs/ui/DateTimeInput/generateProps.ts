@@ -2,7 +2,7 @@ import { Themes } from "../../../system/config";
 import { dateFormat } from "../../utils/date";
 import { trimObject } from "../../utils/misc";
 import { parseStyleToObject } from "../../utils/styles";
-import { get } from "lodash";
+import { capitalize, get } from "lodash";
 import { IDateTimeInput } from ".";
 import { IButton } from "../Button";
 import { IDateTime } from "../DateTime";
@@ -10,7 +10,7 @@ import { IText } from "../Text";
 
 const getLabel = (props: IDateTimeInput) => {
   const mode = get(props, "mode", "date");
-  let label = "Date";
+  let label = capitalize(mode);
   if (props.formatLabel && !!props.value) {
     label = dateFormat(props.value, props.formatLabel);
   } else if (!!props.value) {
@@ -59,16 +59,20 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
     value = new Date(props.value);
   }
   const cprops: IButton = trimObject(props, ["value", "onChange", "date"]);
-  const mode = get(props, "dateTimeProps.mode", "date");
+  const mode = get(props, "mode", "date");
   cprops.label = getLabel(props);
 
   if (mode === "time") {
     cprops.suffix = {
       name: "time-outline",
+      className: "px-2",
+      ...cprops.suffix,
     };
   } else {
     cprops.suffix = {
       name: "calendar-outline",
+      className: "px-2",
+      ...cprops.suffix,
     };
   }
 
@@ -94,7 +98,7 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
   const lstyle = {
     lineHeight: 40,
   };
-  let lclassName = `flex-grow ${get(props, "labelProps.className", "")}`;
+  let lclassName = `flex-grow px-2 ${get(props, "labelProps.className", "")}`;
   if (typeof Themes.inputStyle === "string") {
     lclassName = `${lclassName} ${Themes.inputStyle}`;
   }

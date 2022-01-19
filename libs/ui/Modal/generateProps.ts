@@ -198,6 +198,7 @@ const generateWrapperStyle = (props: IModal, animate: any) => {
 const generateRootWrapperStyle = (props: IModal, animate: any) => {
   const style = {
     maxHeight: (80 / 100) * height,
+    minWidth: 300,
   };
   let className = `flex-initial bg-white shadow-md`;
   Object.assign(style, tailwind());

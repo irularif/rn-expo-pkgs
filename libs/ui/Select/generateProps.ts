@@ -319,6 +319,7 @@ export const getButtonProps = (
   cprops.label = label;
   cprops.suffix = {
     name: "chevron-down",
+    className: "px-2",
     ...props.suffix,
   };
   cprops.size = "custom";
@@ -347,7 +348,7 @@ export const getButtonProps = (
   const lstyle = {
     lineHeight: 40,
   };
-  let lclassName = `flex-grow ${get(props, "labelProps.className", "")}`;
+  let lclassName = `flex-grow px-2 ${get(props, "labelProps.className", "")}`;
   if (typeof Themes.inputStyle === "string") {
     lclassName = `${lclassName} ${Themes.inputStyle}`;
   }

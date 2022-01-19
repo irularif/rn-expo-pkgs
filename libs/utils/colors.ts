@@ -226,7 +226,7 @@ const getLowestMiddleHighest = (rgbIntArray: any[]) => {
 };
 
 const RGBToHex = (color: string) => {
-  if (color.indexOf("#") === 0) return color;
+  if (!color || color.indexOf("#") === 0) return color;
   let r = "0",
     g = "0",
     b = "0",
@@ -349,6 +349,7 @@ function lightOrDark(color: string) {
 }
 
 const addAlphaToHEX = (color: string, opacity: number) => {
+  if (!color) return color;
   // coerce values so ti is between 0 and 100.
   const percent = Math.max(0, Math.min(100, opacity)); // bound percent from 0 to 100
   const intValue = Math.round((opacity / 100) * 255); // map percent to nearest integer (0 - 255)

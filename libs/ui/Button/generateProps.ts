@@ -140,12 +140,6 @@ const generateOriginalStyle = (props: IButton) => {
     props?.direction === "vertical" ? "flex-col" : "flex-row"
   }`;
 
-  if (typeof Themes.buttonStyle === "string") {
-    className = `${className} ${Themes.buttonStyle}`;
-  } else {
-    style = parseStyleToObject(Themes.buttonStyle);
-  }
-
   switch (props.size) {
     case "small":
       className = `px-2 py-1 ${className}`;
@@ -207,45 +201,25 @@ const generateStyle = (props: IButton) => {
       break;
     case "secondary":
       Object.assign(variantStyle, {
-        borderBottomColor: pSBC(
-          0.2,
-          lightenColor(
-            style.borderBottomColor || style.borderColor || bgColor,
-            3
-          ),
-          "",
-          true
-        ),
-        borderLeftColor: pSBC(
-          0.2,
-          lightenColor(
-            style.borderLeftColor || style.borderColor || bgColor,
-            3
-          ),
-          "",
-          true
-        ),
-        borderRightColor: pSBC(
-          0.2,
-          lightenColor(
-            style.borderRightColor || style.borderColor || bgColor,
-            3
-          ),
-          "",
-          true
-        ),
-        borderTopColor: pSBC(
-          0.2,
-          lightenColor(style.borderTopColor || style.borderColor || bgColor, 3),
-          "",
-          true
-        ),
-        backgroundColor: pSBC(
-          0.6,
-          lightenColor(style.backgroundColor || bgColor, 5),
-          "",
-          true
-        ),
+        borderBottomColor:
+          style.borderBottomColor ||
+          style.borderColor ||
+          pSBC(0.2, lightenColor(bgColor, 3), "", true),
+        borderLeftColor:
+          style.borderLeftColor ||
+          style.borderColor ||
+          pSBC(0.2, lightenColor(bgColor, 3), "", true),
+        borderRightColor:
+          style.borderRightColor ||
+          style.borderColor ||
+          pSBC(0.2, lightenColor(bgColor, 3), "", true),
+        borderTopColor:
+          style.borderTopColor ||
+          style.borderColor ||
+          pSBC(0.2, lightenColor(bgColor, 3), "", true),
+        backgroundColor:
+          style.backgroundColor ||
+          pSBC(0.6, lightenColor(bgColor, 5), "", true),
         borderBottomWidth: style.borderBottomWidth || 2,
         borderTopWidth: style.borderTopWidth || 2,
         borderLeftWidth: style.borderLeftWidth || 2,
@@ -353,6 +327,14 @@ const generateButtonStyle = (props: IButton, isPress: boolean) => {
     bgColor = ostyle.backgroundColor;
   }
 
+  let className = "";
+  if (typeof Themes.buttonStyle === "string") {
+    className = `${className} ${Themes.buttonStyle}`;
+  } else {
+    Object.assign(ostyle, parseStyleToObject(Themes.buttonStyle));
+  }
+  Object.assign(ostyle, tailwind(className));
+
   let style = generateStyle(props);
   style = trimTextStyle(style);
 
@@ -413,6 +395,10 @@ const generateTextStyle = (
     "shadow",
     "opacity",
     "position",
+    "top",
+    "left",
+    "right",
+    "bottom",
   ];
   style = trimStyle(style, ex);
 
