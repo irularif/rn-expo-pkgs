@@ -65,7 +65,7 @@ const getTextInputProps = (props: ITextInput, secure: boolean) => {
         v = parseInt(a || "0");
         break;
       case "email":
-        v = text.replace(/\s/g, "");
+        v = text.replace(/\s/g, "").toLowerCase();
         break;
       case "float":
         v = text.replace(/[^0-9.,]/g, "");

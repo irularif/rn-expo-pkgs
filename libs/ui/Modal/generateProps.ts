@@ -196,21 +196,25 @@ const generateWrapperStyle = (props: IModal, animate: any) => {
 };
 
 const generateRootWrapperStyle = (props: IModal, animate: any) => {
-  const style = {};
-  Object.assign(style, tailwind("flex-initial bg-white shadow-md"));
+  const style = {
+    maxHeight: (80 / 100) * height,
+  };
+  let className = `flex-initial bg-white shadow-md`;
+  Object.assign(style, tailwind());
 
   if (props.position === "top") {
-    Object.assign(style, tailwind("rounded-b-md"));
+    className = `${className} rounded-b-md`;
   } else if (props.position === "center") {
-    Object.assign(style, tailwind("rounded-md"));
+    className = `${className} rounded-md`;
   } else if (props.position === "full") {
-    Object.assign(style, tailwind("max-h-full h-full"));
+    className = `${className} max-h-full h-full`;
   } else {
-    Object.assign(style, tailwind("rounded-t-md"));
+    className = `${className} rounded-t-md`;
   }
 
   Object.assign(
     style,
+    tailwind(className),
     tailwind(props.wrapperProps?.rootClassName),
     parseStyleToObject(props?.wrapperProps?.rootStyle)
   );

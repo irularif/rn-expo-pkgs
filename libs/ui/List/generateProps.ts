@@ -39,7 +39,7 @@ const getListProps = (props: IList) => {
 
 const generateStyle = (props: IList) => {
   let style: any = {};
-  let className = `flex-grow w-full ${get(props, "className", "")}`;
+  let className = `w-full ${get(props, "rootClassName", "")}`;
   Object.assign(style, tailwind(className), parseStyleToObject(props.style));
 
   return style;
@@ -47,7 +47,7 @@ const generateStyle = (props: IList) => {
 
 const generateContainerStyle = (props: IList) => {
   let style: any = {};
-  let className = `flex-grow ${get(props, "className", "")}`;
+  let className = `${get(props, "className", "")}`;
   Object.assign(
     style,
     tailwind(className),

@@ -1,18 +1,17 @@
-import React from "react";
+import React, { memo } from "react";
 import getImageProps from "./generateProps";
 import { Image as RNImage, ImageProps } from "react-native";
-// @ts-ignore
-import ExpoFastImage from "expo-fast-image";
 
 export interface IImage extends ImageProps {
   componentRef?: any;
   className?: string;
+  cacheKey?: string;
 }
 
 const Image = (props: IImage) => {
   const imageProps = getImageProps(props);
 
-  return <ExpoFastImage {...imageProps} />;
+  return <RNImage {...imageProps} />;
 };
 
-export default Image;
+export default memo(Image);

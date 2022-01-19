@@ -106,7 +106,7 @@ const initForm = (props: IForm): IFormStore => {
     let nmeta = cloneDeep(meta);
     setMeta({
       ...nmeta,
-      data: get(props, "data", {}),
+      data: cloneDeep(get(props, "data", {})),
     });
   };
 
@@ -127,7 +127,7 @@ const initForm = (props: IForm): IFormStore => {
     if (props.onFieldChange) {
       let ndata = await props.onFieldChange(path, value, nmeta.data);
       if (!!ndata) {
-        nmeta.data = ndata;
+        nmeta.data = cloneDeep(ndata);
       }
     }
 

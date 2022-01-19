@@ -5,6 +5,7 @@ import getListProps from "./generateProps";
 
 export interface IList extends IComponent, FlatListProps<any> {
   children?: undefined;
+  rootClassName?: string;
 }
 
 const List = (props: IList) => {

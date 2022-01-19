@@ -14,8 +14,8 @@ export const getStatusBarProps = (props: IPage): StatusBarProps => {
 
   const statusBarBgColor = !!Themes.statusBarBgColor
     ? Themes.statusBarBgColor.indexOf("#") === -1
-      ? Themes.statusBarBgColor
-      : getColor(Themes.statusBarBgColor)
+      ? getColor(Themes.statusBarBgColor)
+      : Themes.statusBarBgColor
     : "#ffffff00";
 
   const statusBarStyle =

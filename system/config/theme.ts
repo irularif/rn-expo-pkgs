@@ -12,7 +12,7 @@ const fontStyle = "font-notosans-regular";
 
 const theme: ITheme = {
   fontStyle,
-  statusBarBgColor: "white dark:gray-800",
+  statusBarBgColor: "#00000000",
   pageStyle: "bg-gray-100 dark:bg-gray-800",
   textStyle: `${fontStyle} text-base text-gray-700 dark:text-white`,
   primaryColor: RGBToHex(getColor(color.primary)),

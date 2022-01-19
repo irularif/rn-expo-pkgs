@@ -14,7 +14,7 @@ const getViewProps = (props: IView) => {
     ...cprops,
     style,
     ref: props.componentRef,
-  };
+  } as IView;
 };
 
 const getTextProps = (props: IView) => {

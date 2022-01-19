@@ -67,11 +67,12 @@ const AppProvider = (props: IAppProvider) => {
       <ConfigProvider initialConfig={props.config}>
         <SafeAreaProvider>
           <View onLayout={onLayoutRootView} className="flex flex-1">
-            {!!appIsReady ? (
-              <NavigationProvider {...props} />
-            ) : (
-              <AppProviderLoading {...props} />
-            )}
+            {
+              !!appIsReady && <NavigationProvider {...props} />
+              //  : (
+              //   <AppProviderLoading {...props} />
+              // )
+            }
           </View>
         </SafeAreaProvider>
       </ConfigProvider>
