@@ -25,11 +25,7 @@ export const getModalProps = () => {
     position: "center",
     visible: state.visible,
     wrapperProps: {
-      rootClassName: "m-6",
-      className: "p-4 pb-2",
-      rootStyle: {
-        minWidth: 300,
-      },
+      className: "p-4 pb-2 m-6",
     },
     onClose,
   } as IModal;
@@ -39,7 +35,7 @@ export const getTitleProps = () => {
   const { state: alert } = useAlertState();
   const cprops = get(alert, "customize.titleProps", {});
   const children = get(alert, "title", "");
-  const className = `text-2xl text-center flex-grow font-bold pb-4 ${get(
+  const className = `text-2xl text-center font-bold pb-4 ${get(
     alert,
     "customize.titleProps.className",
     ""
@@ -56,7 +52,7 @@ export const getContentProps = () => {
   const { state: alert } = useAlertState();
   const cprops = get(alert, "customize.messageProps", {});
   const children = get(alert, "message", "");
-  const className = `text-lg text-center flex-grow text-base ${get(
+  const className = `text-lg text-center text-base ${get(
     alert,
     "customize.messageProps.className",
     ""
@@ -85,9 +81,11 @@ export const getButtonOkProps = () => {
   );
   const onPress = () => {
     let onPress = get(alert, "onOK", null);
-    if (onPress) {
-      onPress();
-    }
+    setTimeout(() => {
+      if (onPress) {
+        onPress();
+      }
+    }, 300);
     close();
   };
 
@@ -115,9 +113,11 @@ export const getButtonCancelProps = () => {
   );
   const onPress = () => {
     let onPress = get(alert, "onCancel", null);
-    if (onPress) {
-      onPress();
-    }
+    setTimeout(() => {
+      if (onPress) {
+        onPress();
+      }
+    }, 300);
     close();
   };
 

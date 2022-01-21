@@ -23,14 +23,13 @@ interface IBackdrop extends IView, TouchableOpacityProps {
 
 export interface IModal {
   backdropProps?: IBackdrop;
-  wrapperProps?: IScrollView;
+  wrapperProps?: IView;
   panelProps?: IView;
   children?: any;
   componentRef?: any;
   position?: "top" | "bottom" | "center" | "full";
   className?: string;
   style?: StyleProp<ViewStyle>;
-  renderHeader?: ReactNode;
   visible: boolean;
   onClose: () => void;
 }
@@ -54,11 +53,7 @@ const RenderModal = (props: any) => {
   const backdropProps = getBackdropProps(props.modalProps, props.animate);
   const buttonProps = getButtonBackdropProps(props.modalProps, props.animate);
   const panelProps = getPanelProps(props.modalProps, props.animate);
-  const wrapperProps = getWrapperProps(
-    props.modalProps,
-    props.visibleState,
-    props.animate
-  );
+  const wrapperProps = getWrapperProps(props.modalProps, props.animate);
 
   if (visible) {
     return (
@@ -66,10 +61,7 @@ const RenderModal = (props: any) => {
         <View {...backdropProps}></View>
         <View {...panelProps}>
           <TouchableOpacity {...buttonProps} />
-          <ScrollView {...wrapperProps}>
-            {props.modalProps.renderHeader}
-            {props.modalProps.children}
-          </ScrollView>
+          <View {...wrapperProps}>{props.modalProps.children}</View>
         </View>
       </>
     );

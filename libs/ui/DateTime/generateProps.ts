@@ -42,7 +42,6 @@ const getModalProps = (props: IDateTime) => {
     position: "center",
     wrapperProps: {
       ...get(props, "modalProps.wrapperProps", {}),
-      scrollEnabled: false,
     },
   };
 

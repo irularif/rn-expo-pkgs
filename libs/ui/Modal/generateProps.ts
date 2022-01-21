@@ -126,30 +126,12 @@ export const getPanelProps = (props: IModal, animateRef: any) => {
   } as IView;
 };
 
-export const getWrapperProps = (
-  props: IModal,
-  visibleState: any,
-  animate: any
-) => {
+export const getWrapperProps = (props: IModal, animate: any) => {
   const cprops = { ...props.wrapperProps };
-  const [visible] = visibleState;
-  const keyboardAvoidingViewProps = get(
-    props,
-    "wrapperProps.keyboardAvoidingViewProps",
-    {}
-  );
-  keyboardAvoidingViewProps.className = `flex-none justify-center ${get(
-    keyboardAvoidingViewProps,
-    "className",
-    ""
-  )}`;
-  cprops.rootStyle = generateRootWrapperStyle(props, animate);
   cprops.style = generateWrapperStyle(props, animate);
-  cprops.keyboardAvoidingViewProps = keyboardAvoidingViewProps;
 
   return {
     ...cprops,
-    stickyHeaderIndices: !!props.renderHeader ? [0] : undefined,
     ref: props.wrapperProps?.componentRef,
   } as IScrollView;
 };
@@ -178,30 +160,12 @@ const generateBackdropStyle = (props: IModal, animate: any) => {
 };
 
 const generateWrapperStyle = (props: IModal, animate: any) => {
-  const style: any = {};
-  const className = `${props.position === "full" ? "flex-grow" : ""} ${get(
-    props,
-    "className",
-    ""
-  )} ${get(props, "wrapperProps.className", "")}`;
-
-  Object.assign(
-    style,
-    tailwind(className),
-    parseStyleToObject(props.wrapperProps?.style),
-    parseStyleToObject(props.wrapperProps?.contentContainerStyle)
-  );
-
-  return style;
-};
-
-const generateRootWrapperStyle = (props: IModal, animate: any) => {
-  const style = {
+  const style: any = {
     maxHeight: (80 / 100) * height,
+    minHeight: 160,
     minWidth: 300,
   };
-  let className = `flex-initial bg-white shadow-md`;
-  Object.assign(style, tailwind());
+  let className = `bg-white shadow-md flex-shrink`;
 
   if (props.position === "top") {
     className = `${className} rounded-b-md`;
@@ -213,11 +177,16 @@ const generateRootWrapperStyle = (props: IModal, animate: any) => {
     className = `${className} rounded-t-md`;
   }
 
+  className = `${className}  ${get(props, "className", "")} ${get(
+    props,
+    "wrapperProps.className",
+    ""
+  )}`;
+
   Object.assign(
     style,
-    tailwind(className),
-    tailwind(props.wrapperProps?.rootClassName),
-    parseStyleToObject(props?.wrapperProps?.rootStyle)
+    tailwind(className)
+    // parseStyleToObject(props.wrapperProps?.style)
   );
 
   Object.assign(style, {
@@ -230,8 +199,7 @@ const generateRootWrapperStyle = (props: IModal, animate: any) => {
 
 const generatePanelStyle = (props: IModal, animate: any) => {
   const style = {};
-  let className =
-    "flex flex-1 absolute top-0 left-0 right-0 bottom-0 bg-opacity-0";
+  let className = "absolute top-0 left-0 right-0 bottom-0 bg-opacity-0";
   if (props.position === "top") {
     className = `${className} justify-start`;
   } else if (props.position === "center") {

@@ -21,3 +21,4 @@ export { default as Select } from "./Select";
 export { default as DateTime } from "./DateTime";
 export { default as DateTimeInput } from "./DateTimeInput";
 export { default as Portal } from "./Portal";
+export { default as Shimmer } from "./Shimmer";

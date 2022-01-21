@@ -2,11 +2,8 @@ import { NavigationContainerProps } from "@react-navigation/core";
 import { NativeStackNavigatorProps } from "@react-navigation/native-stack/lib/typescript/src/types";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { rootStore } from "pkgs/system/autoload/store";
 import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Provider } from "react-redux";
-import { AnyAction, EmptyObject, Store } from "redux";
 import { FontSources } from "../../../system/autoload/fonts";
 import { IConfigStore, TRole } from "../../../types/global";
 import View from "../View";
@@ -22,16 +19,12 @@ export interface IAppProvider {
   onUpdateInstalled?: () => void | Promise<void>;
   disableAppCenter?: boolean;
   config?: Partial<IConfigStore>;
-  store?: Store<EmptyObject, AnyAction> & {
-    dispatch: unknown;
-  };
 }
 
 // const store = configureStore(MiddlewareArgs);
 
 const AppProvider = (props: IAppProvider) => {
   const [appIsReady, setAppIsReady] = useState(false);
-  // const [loaded] = useFonts(FontSources);
 
   const prepare = async () => {
     try {
@@ -63,20 +56,17 @@ const AppProvider = (props: IAppProvider) => {
   }, []);
 
   return (
-    <Provider store={rootStore}>
-      <ConfigProvider initialConfig={props.config}>
-        <SafeAreaProvider>
-          <View onLayout={onLayoutRootView} className="flex flex-1">
-            {
-              !!appIsReady && <NavigationProvider {...props} />
-              //  : (
-              //   <AppProviderLoading {...props} />
-              // )
-            }
-          </View>
-        </SafeAreaProvider>
-      </ConfigProvider>
-    </Provider>
+    <ConfigProvider initialConfig={props.config}>
+      <SafeAreaProvider>
+        <View onLayout={onLayoutRootView} className="flex flex-1">
+          {!!appIsReady ? (
+            <NavigationProvider {...props} />
+          ) : (
+            <AppProviderLoading {...props} />
+          )}
+        </View>
+      </SafeAreaProvider>
+    </ConfigProvider>
   );
 };
 

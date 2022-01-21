@@ -1,7 +1,5 @@
-import { IComponent } from "../../../types/global";
 import React, { ReactNode } from "react";
 import {
-  Animated,
   KeyboardAvoidingView,
   KeyboardAvoidingViewProps,
   ScrollView as RNScrollView,
@@ -9,10 +7,9 @@ import {
   StyleProp,
   ViewStyle,
 } from "react-native";
-import View from "../View";
+import { IComponent } from "../../../types/global";
 import getScrollViewProps, {
   getKeyboardAvoidingViewProps,
-  getViewProps,
 } from "./generateProps";
 
 export interface IKeyboardAvoidingView
@@ -30,15 +27,9 @@ export interface IScrollView extends IComponent, ScrollViewProps {
 }
 
 const ScrollView = (props: IScrollView) => {
-  const viewProps = getViewProps(props);
   const scrollViewProps = getScrollViewProps(props);
   const keyboarAvoidingViewProps = getKeyboardAvoidingViewProps(props);
   let Component: any = RNScrollView;
-  // if (props.scrollEnabled === false) {
-  //   Component = View;
-  // } else if (props.type === "animated") {
-  //   Component = Animated.ScrollView;
-  // }
 
   return (
     <KeyboardAvoidingView {...keyboarAvoidingViewProps}>

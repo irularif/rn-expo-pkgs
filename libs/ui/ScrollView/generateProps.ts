@@ -1,16 +1,7 @@
-import { trimObject } from "../../utils/misc";
-import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { get } from "lodash";
 import { Platform } from "react-native";
 import { IKeyboardAvoidingView, IScrollView } from ".";
-
-export const getViewProps = (props: IScrollView): IScrollView => {
-  const cprops = trimObject(props, ["keyboardAvoidingViewProps", "rootStyle"]);
-
-  return {
-    ...cprops,
-  };
-};
+import tailwind, { parseStyleToObject } from "../../utils/styles";
 
 const getScrollViewProps = (props: IScrollView): IScrollView => {
   const cprops = { ...props };
@@ -46,7 +37,7 @@ const generateScrollViewStyle = (props: IScrollView) => {
   const className = get(props, "rootClassName", "");
   Object.assign(
     style,
-    tailwind(`flex ${className}`),
+    tailwind(`${className}`),
     parseStyleToObject(props.rootStyle)
   );
 
@@ -55,7 +46,7 @@ const generateScrollViewStyle = (props: IScrollView) => {
 
 const generateContentContainerStyle = (props: IScrollView) => {
   const style = {};
-  let className = `flex ${get(props, "className", "")}`;
+  let className = `${get(props, "className", "")}`;
 
   Object.assign(
     style,
@@ -69,7 +60,7 @@ const generateContentContainerStyle = (props: IScrollView) => {
 
 const generateKeyboardAvoidingViewStyle = (props: IScrollView) => {
   const style = {};
-  let className = `flex flex-1 ${get(
+  let className = `flex-shrink ${get(
     props,
     "keyboardAvoidingViewProps.className",
     ""

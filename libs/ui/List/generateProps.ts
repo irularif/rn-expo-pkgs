@@ -39,7 +39,7 @@ const getListProps = (props: IList) => {
 
 const generateStyle = (props: IList) => {
   let style: any = {};
-  let className = `flex-1 w-full ${get(props, "rootClassName", "")}`;
+  let className = `w-full ${get(props, "rootClassName", "")}`;
   Object.assign(style, tailwind(className), parseStyleToObject(props.style));
 
   return style;

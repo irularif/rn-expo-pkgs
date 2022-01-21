@@ -17,7 +17,6 @@ const getTopBarProps = (props: ITopBar) => {
     "backButton",
     "onBack",
     "isLoading",
-    "className",
   ]);
   const style = generateStyle(props, inset);
 
