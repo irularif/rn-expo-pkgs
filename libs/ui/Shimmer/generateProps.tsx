@@ -73,6 +73,10 @@ export const initProps = (props: IShimmer) => {
     } else if (!isFocused) {
       ANIMATION.stopAnimation();
     }
+
+    return () => {
+      ANIMATION.stopAnimation();
+    };
   }, [position.width, isFocused]);
 
   return {
