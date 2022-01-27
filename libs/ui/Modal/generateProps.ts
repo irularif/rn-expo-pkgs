@@ -165,7 +165,7 @@ const generateWrapperStyle = (props: IModal, animate: any) => {
     minHeight: 160,
     minWidth: 300,
   };
-  let className = `bg-white shadow-md flex-shrink`;
+  let className = `bg-white shadow flex-shrink`;
 
   if (props.position === "top") {
     className = `${className} rounded-b-md`;

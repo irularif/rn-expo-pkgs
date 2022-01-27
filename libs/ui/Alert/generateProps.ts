@@ -18,8 +18,10 @@ const init = () => {
 };
 
 export const getModalProps = () => {
-  const { state } = useAlertState();
-  const onClose = () => {};
+  const { state, close } = useAlertState();
+  const onClose = () => {
+    close();
+  };
 
   return {
     position: "center",

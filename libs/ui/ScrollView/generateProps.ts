@@ -60,7 +60,7 @@ const generateContentContainerStyle = (props: IScrollView) => {
 
 const generateKeyboardAvoidingViewStyle = (props: IScrollView) => {
   const style = {};
-  let className = `flex-shrink ${get(
+  let className = `flex-shrink flex-grow ${get(
     props,
     "keyboardAvoidingViewProps.className",
     ""
