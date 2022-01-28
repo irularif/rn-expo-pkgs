@@ -1,4 +1,5 @@
 import { get, set } from "lodash";
+import { Themes } from "pkgs/system/config";
 import { useContext, useEffect } from "react";
 import { IField } from ".";
 import { FormContext } from "../../../system/context/form";
@@ -125,9 +126,19 @@ const getInputProps = (props: IField) => {
 
 const getLabelProps = (props: IField) => {
   const cprops = { ...props.labelProps };
+  const style = {};
+  let className = ``;
+  if (typeof Themes.fieldStyle === "string") {
+    className = `${className} ${Themes.fieldStyle}`;
+  } else {
+    Object.assign(style, Themes.fieldStyle);
+  }
+  className = `${className} ${get(props, "labelProps.className", "")}`;
 
   return {
     ...cprops,
+    className,
+    style,
     ref: cprops.componentRef,
   };
 };

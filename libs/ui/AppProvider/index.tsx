@@ -2,8 +2,10 @@ import { NavigationContainerProps } from "@react-navigation/core";
 import { NativeStackNavigatorProps } from "@react-navigation/native-stack/lib/typescript/src/types";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import LibsState, { LibsContext } from "pkgs/system/store";
 import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Provider } from "react-redux";
 import { FontSources } from "../../../system/autoload/fonts";
 import { IConfigStore, TRole } from "../../../types/global";
 import View from "../View";
@@ -56,17 +58,19 @@ const AppProvider = (props: IAppProvider) => {
   }, []);
 
   return (
-    <ConfigProvider initialConfig={props.config}>
-      <SafeAreaProvider>
-        <View onLayout={onLayoutRootView} className="flex flex-1">
-          {!!appIsReady ? (
-            <NavigationProvider {...props} />
-          ) : (
-            <AppProviderLoading {...props} />
-          )}
-        </View>
-      </SafeAreaProvider>
-    </ConfigProvider>
+    <LibsContext.Provider value={LibsState.getState()}>
+      <ConfigProvider initialConfig={props.config}>
+        <SafeAreaProvider>
+          <View onLayout={onLayoutRootView} className="flex flex-1">
+            {!!appIsReady ? (
+              <NavigationProvider {...props} />
+            ) : (
+              <AppProviderLoading {...props} />
+            )}
+          </View>
+        </SafeAreaProvider>
+      </ConfigProvider>
+    </LibsContext.Provider>
   );
 };
 

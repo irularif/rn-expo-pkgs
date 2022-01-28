@@ -63,8 +63,7 @@ const Select = (props: ISelect) => {
     props,
     itemsState,
     dropdownOpenState,
-    buttonRef,
-    btnPosState
+    buttonRef
   );
 
   return (

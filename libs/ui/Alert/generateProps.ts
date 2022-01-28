@@ -1,8 +1,9 @@
 import { useAlertState } from "../../hooks/alert";
-import { get } from "lodash";
+import { get, set } from "lodash";
 import { useEffect, useState } from "react";
 import { IButton } from "../Button";
 import { IModal } from "../Modal";
+import { trimObject } from "pkgs/libs/utils/misc";
 
 const init = () => {
   const metaState: any = useState({
@@ -19,16 +20,22 @@ const init = () => {
 
 export const getModalProps = () => {
   const { state, close } = useAlertState();
+  const cprops = get(state, "customize.modalProps", {});
+  const className = `p-4 pb-2 m-6 ${get(
+    state,
+    "customize.modalProps.wrapperProps.className",
+    ""
+  )}`;
+  set(cprops, "wrapperProps.className", className);
   const onClose = () => {
     close();
   };
 
   return {
+    ...cprops,
     position: "center",
     visible: state.visible,
-    wrapperProps: {
-      className: "p-4 pb-2 m-6",
-    },
+
     onClose,
   } as IModal;
 };

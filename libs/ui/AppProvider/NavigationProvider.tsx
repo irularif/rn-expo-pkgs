@@ -8,6 +8,7 @@ import { IAppProvider } from ".";
 import Alert from "../Alert";
 import PortalProvider from "../Portal/PortalProvider";
 import AppProviderLoading from "./Loading";
+import Toast from "../Toast";
 
 const Stack = createNativeStackNavigator();
 
@@ -79,6 +80,7 @@ const NavigationProvider = (props: IAppProvider) => {
               ))}
             </Stack.Navigator>
           </Alert>
+          <Toast />
         </PortalProvider>
       </NavigationContainer>
     );

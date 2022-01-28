@@ -1,5 +1,5 @@
 import { IComponent } from "../../../types/global";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   StyleProp,
   TextInput as RNTextInput,
@@ -14,6 +14,7 @@ import getTextInputProps, {
   getSecureProps,
   getSufixButtonProps,
   getWrapperProps,
+  init,
 } from "./generateProps";
 import { SvgProps } from "react-native-svg";
 
@@ -49,9 +50,10 @@ export interface ITextInput extends IComponent, Omit<TextInputProps, "value"> {
 }
 
 const TextInput = (props: ITextInput) => {
+  const { focusState } = init(props);
   const [secure, setsecure] = useState(props.type === "password");
-  const textInputProps = getTextInputProps(props, secure);
-  const wrapperProps = getWrapperProps(props);
+  const textInputProps = getTextInputProps(props, focusState, secure);
+  const wrapperProps = getWrapperProps(props, focusState);
 
   return (
     <View {...wrapperProps}>

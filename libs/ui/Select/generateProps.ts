@@ -14,6 +14,7 @@ import {
   ListRenderItemInfo,
   Platform,
   StyleProp,
+  TextStyle,
   TouchableOpacityProps,
   ViewStyle,
 } from "react-native";
@@ -300,10 +301,8 @@ export const getButtonProps = (
   props: ISelect,
   itemsState: any,
   dropdownOpenState: any,
-  buttonRef: any,
-  btnPosState: any
+  buttonRef: any
 ) => {
-  const [__, setposstate] = btnPosState;
   const [isOpen, setopen] = dropdownOpenState;
   const [items, _] = itemsState;
   const selectedItem = getSelected(props, items);
@@ -319,7 +318,6 @@ export const getButtonProps = (
   cprops.label = label;
   cprops.suffix = {
     name: "chevron-down",
-    className: "px-2",
     ...props.suffix,
   };
   cprops.size = "custom";
@@ -345,16 +343,16 @@ export const getButtonProps = (
   className = `${className} ${get(props, "className", "")}`;
 
   const labelProps: IText = get(props, "labelProps", {});
-  const lstyle = {
+  let lstyle: TextStyle = {
     lineHeight: 40,
   };
-  let lclassName = `flex-grow px-2 ${get(props, "labelProps.className", "")}`;
+  let lclassName = `flex-grow ${get(props, "labelProps.className", "")}`;
   if (typeof Themes.inputStyle === "string") {
     lclassName = `${lclassName} ${Themes.inputStyle}`;
   }
   if (!props.value) {
     if (typeof Themes.placeholderStyle === "string") {
-      lclassName = `text-sm leading-10 ${lclassName} ${Themes.placeholderStyle}`;
+      lclassName = `text-sm ${lclassName} ${Themes.placeholderStyle}`;
     } else {
       Object.assign(lstyle, parseStyleToObject(Themes.placeholderStyle));
     }
@@ -362,13 +360,17 @@ export const getButtonProps = (
   if (!props.value) {
     lclassName = `${lclassName} text-gray-400`;
   }
+  lclassName = `${lclassName}`;
   labelProps.className = lclassName;
   Object.assign(lstyle, parseStyleToObject(get(props, "labelProps.style", {})));
-  labelProps.style = lstyle;
 
   return {
     ...cprops,
-    labelProps,
+    labelProps: {
+      ...labelProps,
+      className: lclassName,
+      style: lstyle,
+    },
     className,
     componentRef: buttonRef,
     onPress,

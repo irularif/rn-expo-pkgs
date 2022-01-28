@@ -5,6 +5,7 @@ import getTextProps from "./generateProps";
 
 export interface IText extends IComponent, TextProps {
   style?: StyleProp<TextStyle>;
+  children?: any;
 }
 
 const Text = (props: IText) => {

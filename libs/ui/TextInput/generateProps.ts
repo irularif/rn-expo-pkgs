@@ -2,13 +2,26 @@ import { Themes } from "../../../system/config";
 import { trimObject } from "../../utils/misc";
 import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { get, set } from "lodash";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TextInputProps } from "react-native";
 import { ITextInput } from ".";
 import { IButton } from "../Button";
 import { IView } from "../View";
 
-const getTextInputProps = (props: ITextInput, secure: boolean) => {
+export const init = (props: ITextInput) => {
+  const focusState = useState(false);
+
+  return {
+    focusState,
+  };
+};
+
+const getTextInputProps = (
+  props: ITextInput,
+  focusState: any,
+  secure: boolean
+) => {
+  const [_, setFocus] = focusState;
   const cprops: ITextInput = trimObject(props, [
     "secureButtonProps",
     "wrapperProps",
@@ -24,6 +37,21 @@ const getTextInputProps = (props: ITextInput, secure: boolean) => {
     end: 0,
   });
   const style = generateStyle(props);
+  const onFocus = (e: any) => {
+    if (!!props.onFocus) {
+      props.onFocus(e);
+    }
+
+    setFocus(true);
+  };
+
+  const onBlur = (e: any) => {
+    if (!!props.onBlur) {
+      props.onBlur(e);
+    }
+
+    setFocus(false);
+  };
 
   const onKeyPress = (e: any) => {
     const key = e.nativeEvent.key;
@@ -153,6 +181,8 @@ const getTextInputProps = (props: ITextInput, secure: boolean) => {
     textAlignVertical: "top",
     style,
     ref: props.componentRef,
+    onFocus,
+    onBlur,
   } as TextInputProps;
 };
 
@@ -183,9 +213,10 @@ const getSecureProps = (props: ITextInput, secure: boolean, setsecure: any) => {
   return cprops;
 };
 
-const getWrapperProps = (props: ITextInput) => {
+const getWrapperProps = (props: ITextInput, focusState: any) => {
   const cprops: IView = { ...props.wrapperProps };
-  const style = generateWrapperStyle(props);
+  const [isFocused] = focusState;
+  const style = generateWrapperStyle(props, isFocused);
 
   return {
     ...cprops,
@@ -294,7 +325,7 @@ const generateStyle = (props: ITextInput) => {
   return style;
 };
 
-const generateWrapperStyle = (props: ITextInput) => {
+const generateWrapperStyle = (props: ITextInput, isFocused: boolean) => {
   let style: any = {};
   let className = "flex flex-row";
 
@@ -311,7 +342,7 @@ const generateWrapperStyle = (props: ITextInput) => {
 
   let cclassName = className
     .split(" ")
-    .filter((x) => !x.includes("error"))
+    .filter((x) => !x.includes("error") && !x.includes("focus"))
     .join(" ");
   let eclassName = "";
   if (!!props.isError) {
@@ -322,6 +353,15 @@ const generateWrapperStyle = (props: ITextInput) => {
       .join(" ");
   }
   cclassName = `${cclassName} ${eclassName}`;
+  let fclassName = "";
+  if (!!isFocused) {
+    fclassName = className
+      .split(" ")
+      .filter((x) => x.includes("focus"))
+      .map((x) => x.replace("focus:", ""))
+      .join(" ");
+  }
+  cclassName = `${cclassName} ${fclassName}`;
 
   Object.assign(
     style,

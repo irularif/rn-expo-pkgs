@@ -400,7 +400,6 @@ const generateTextStyle = (
 ) => {
   let style = generateStyle(props);
   const activeStyle = generateActiveStyle(props);
-  Object.assign(style, parseStyleToObject(props.labelProps?.style));
 
   const ex = [
     "margin",
@@ -419,10 +418,14 @@ const generateTextStyle = (
     "bottom",
   ];
   style = trimStyle(style, ex);
-
-  Object.assign(style, tailwind(className), {
-    flexShrink: 1,
-  });
+  Object.assign(
+    style,
+    {
+      flexShrink: 1,
+    },
+    tailwind(className),
+    parseStyleToObject(props.labelProps?.style)
+  );
 
   const stylePress: any = cloneDeep(style);
   Object.assign(stylePress, {

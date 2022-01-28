@@ -65,13 +65,11 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
   if (mode === "time") {
     cprops.suffix = {
       name: "time-outline",
-      className: "px-2",
       ...cprops.suffix,
     };
   } else {
     cprops.suffix = {
       name: "calendar-outline",
-      className: "px-2",
       ...cprops.suffix,
     };
   }
@@ -98,7 +96,7 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
   const lstyle = {
     lineHeight: 40,
   };
-  let lclassName = `flex-grow px-2 ${get(props, "labelProps.className", "")}`;
+  let lclassName = `flex-grow ${get(props, "labelProps.className", "")}`;
   if (typeof Themes.inputStyle === "string") {
     lclassName = `${lclassName} ${Themes.inputStyle}`;
   }

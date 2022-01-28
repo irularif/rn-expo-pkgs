@@ -24,7 +24,7 @@ export interface IAlertComponent {
   labelCancel?: string;
   actionOkProps?: IButton;
   actionCancelProps?: IButton;
-  modalProps?: IModal;
+  modalProps?: Partial<IModal>;
   wrapperActionProps?: IView;
   image?: ReactNode;
 }
