@@ -1,9 +1,8 @@
 import { get } from "lodash";
-import { NativeModules } from "react-native";
+import useRootNavigation from "pkgs/libs/hooks/useRootNavigation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ITopBar } from ".";
 import { trimObject } from "../../utils/misc";
-import { back } from "../../utils/navigation";
 import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { IButton } from "../Button";
 import { IView } from "../View";
@@ -28,8 +27,9 @@ const getTopBarProps = (props: ITopBar) => {
 };
 
 const getBackButtonProps = (props: ITopBar) => {
+  const { goBack } = useRootNavigation();
   const onPress = (ev: any) => {
-    back();
+    goBack();
   };
   const cprops: IButton = {
     prefix: {

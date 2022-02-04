@@ -1,15 +1,15 @@
-import { Themes } from "../../../system/config";
-import { useConfig } from "../../hooks";
-import { trimObject } from "../../utils/misc";
-import { getColor, parseStyleToObject } from "../../utils/styles";
-import { get, indexOf } from "lodash";
+import { useFocusEffect } from "@react-navigation/native";
+import { get } from "lodash";
+import { useLibsSelector } from "pkgs/libs/hooks/useLibsStore";
+import { useCallback } from "react";
 import { Platform, StatusBar, StatusBarProps } from "react-native";
 import { IPage } from ".";
-import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
+import { Themes } from "../../../system/config";
+import { trimObject } from "../../utils/misc";
+import { getColor, parseStyleToObject } from "../../utils/styles";
 
 export const getStatusBarProps = (props: IPage): StatusBarProps => {
-  const { config } = useConfig();
+  const config = useLibsSelector((state) => state.config);
   const cprops = { ...props.statusBarProps };
 
   const statusBarBgColor = !!Themes.statusBarBgColor

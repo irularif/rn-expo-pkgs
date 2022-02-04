@@ -3,10 +3,7 @@ import { Themes } from "../../../system/config";
 import { IItem } from "../../../types/global";
 import fuzzyMatch from "../../utils/fuzzy-match";
 import { trimObject } from "../../utils/misc";
-import tailwind, {
-  parseStyleToObject,
-  trimClassName,
-} from "../../utils/styles";
+import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { cloneDeep, debounce, get, set } from "lodash";
 import { useCallback, useRef, useState } from "react";
 import {
@@ -21,7 +18,7 @@ import {
   TouchableOpacityProps,
   ViewStyle,
 } from "react-native";
-import { ISelect } from ".";
+import { IDropdown } from ".";
 import { IButton } from "../Button";
 import { IList } from "../List";
 import { IText } from "../Text";
@@ -30,7 +27,7 @@ import { IView } from "../View";
 
 const { width, height } = Dimensions.get("window");
 
-export const getSelected = (props: ISelect, items: any) => {
+export const getSelected = (props: IDropdown, items: any) => {
   const value = get(props, "value", "");
   const valuePath = get(props, "valuePath", "");
   let isSelected = false;
@@ -58,7 +55,7 @@ export const getSelected = (props: ISelect, items: any) => {
   }
   return selected;
 };
-export const getSelectedIndex = (props: ISelect, items: any) => {
+export const getSelectedIndex = (props: IDropdown, items: any) => {
   const value = get(props, "value", "");
   const valuePath = get(props, "valuePath", "");
   let isSelected = false;
@@ -89,7 +86,7 @@ export const getSelectedIndex = (props: ISelect, items: any) => {
   return !!selected ? index : -1;
 };
 const getLabel = (
-  props: ISelect,
+  props: IDropdown,
   item: any,
   defaultValue: string = ""
 ): string => {
@@ -110,7 +107,7 @@ const getLabel = (
   }
   return label;
 };
-const getValue = (props: ISelect, item: any) => {
+const getValue = (props: IDropdown, item: any) => {
   const valuePath = get(props, "valuePath", "");
   let value = "";
   if (typeof item === "object") {
@@ -130,11 +127,8 @@ const getValue = (props: ISelect, item: any) => {
   }
   return value;
 };
-const donFilter = debounce((filterItem) => {
-  filterItem();
-}, 500);
 
-export const init = (props: ISelect) => {
+export const init = (props: IDropdown) => {
   const itemsState = useState([] as IItem[]);
   const filterState = useState("");
   const dropdownOpenState = useState(false);
@@ -146,8 +140,7 @@ export const init = (props: ISelect) => {
   const [isOpen, setopen] = dropdownOpenState;
   const [_, setposstate] = btnPosState;
   const [____, setwrpstate] = wrpPosState;
-  const [items, setitems] = itemsState;
-  const [filter, __] = filterState;
+  const [__, setitems] = itemsState;
   const animate = animateRef.current;
   const keyboardHeightState = useState(0);
   const [_____, setKeyboardHeight] = keyboardHeightState;
@@ -175,36 +168,6 @@ export const init = (props: ISelect) => {
       );
     }
   };
-
-  const filterItem = () => {
-    if (!!props.filterProps?.onFilter) {
-      props.filterProps?.onFilter(filter);
-    } else {
-      if (!!filter && Array.isArray(props.items)) {
-        let item = props.items.filter((x) => {
-          let value = getLabel(props, x);
-          if (!value) {
-            return false;
-          }
-
-          let match = fuzzyMatch(
-            String(value).toLowerCase(),
-            String(filter).toLowerCase()
-          );
-          return match;
-        });
-        setitems(item);
-      } else if (!filter && Array.isArray(props.items)) {
-        if (items.length !== props.items.length) {
-          setitems(props.items);
-        }
-      }
-    }
-  };
-
-  const onfilter = debounce(() => {
-    donFilter(filterItem);
-  }, 500);
 
   useFocusEffect(
     useCallback(() => {
@@ -256,12 +219,6 @@ export const init = (props: ISelect) => {
     }, [isOpen])
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      onfilter();
-    }, [filter])
-  );
-
   function onKeyboardDidShow(e: any) {
     setKeyboardHeight(e.endCoordinates.height);
   }
@@ -301,24 +258,12 @@ export const init = (props: ISelect) => {
 };
 
 export const getButtonProps = (
-  props: ISelect,
-  itemsState: any,
+  props: IDropdown,
   dropdownOpenState: any,
   buttonRef: any
 ) => {
   const [isOpen, setopen] = dropdownOpenState;
-  const [items, _] = itemsState;
-  const selectedItem = getSelected(props, items);
   const cprops: IButton = trimObject(props, []);
-  let label = get(props, "placeholder", "Select");
-  if (props.value) {
-    label = getLabel(
-      props,
-      selectedItem,
-      get(props, "label", props.value || label)
-    );
-  }
-  cprops.label = label;
   cprops.suffix = {
     name: "chevron-down",
     ...props.suffix,
@@ -330,59 +275,15 @@ export const getButtonProps = (
     setopen(!isOpen);
   };
 
-  let className = `m-0 p-0 px-2`;
-  if (typeof Themes.inputWrapperStyle === "string") {
-    let cclassName = trimClassName(Themes.inputWrapperStyle, [
-      "error",
-      "focus",
-      "active",
-    ]);
-    className = `${className} ${cclassName}`;
-  }
-  if (!props.value) {
-    if (typeof Themes.placeholderStyle === "string") {
-      className = `${className} ${Themes.placeholderStyle}`;
-    }
-  }
-  className = `${className} ${get(props, "className", "")}`;
-
-  const labelProps: IText = get(props, "labelProps", {});
-  let lstyle: TextStyle = {
-    lineHeight: 40,
-  };
-  let lclassName = `flex-grow ${get(props, "labelProps.className", "")}`;
-  if (typeof Themes.inputStyle === "string") {
-    lclassName = `${lclassName} ${Themes.inputStyle}`;
-  }
-  if (!props.value) {
-    if (typeof Themes.placeholderStyle === "string") {
-      lclassName = `text-sm ${lclassName} ${Themes.placeholderStyle}`;
-    } else {
-      Object.assign(lstyle, parseStyleToObject(Themes.placeholderStyle));
-    }
-  }
-  if (!props.value) {
-    lclassName = `${lclassName} text-gray-400`;
-  }
-  lclassName = `${lclassName}`;
-  labelProps.className = lclassName;
-  Object.assign(lstyle, parseStyleToObject(get(props, "labelProps.style", {})));
-
   return {
     ...cprops,
-    labelProps: {
-      ...labelProps,
-      className: lclassName,
-      style: lstyle,
-    },
-    className,
     componentRef: buttonRef,
     onPress,
   } as IButton;
 };
 
 export const getDropdownWrapperProps = (
-  props: ISelect,
+  props: IDropdown,
   wrapperRef: any,
   btnPosState: any,
   wrpPosState: any,
@@ -450,7 +351,7 @@ export const getDropdownWrapperProps = (
 };
 
 export const getBackdropProps = (
-  props: ISelect,
+  props: IDropdown,
   dropdownOpenState: any,
   animate: any
 ) => {
@@ -481,7 +382,7 @@ export const getBackdropProps = (
   };
 };
 
-export const getListProps = (props: ISelect, itemsState: any) => {
+export const getListProps = (props: IDropdown, itemsState: any) => {
   const [items, _] = itemsState;
   const cprops: IList = trimObject(cloneDeep(get(props, "listProps", {})), [
     "data",
@@ -490,11 +391,6 @@ export const getListProps = (props: ISelect, itemsState: any) => {
   let rootStyle = {
     overflow: "hidden",
   };
-  const selectedIndex = getSelectedIndex(props, items);
-
-  if (selectedIndex > -1) {
-    cprops.initialScrollIndex = selectedIndex;
-  }
 
   return {
     ...cprops,
@@ -503,31 +399,25 @@ export const getListProps = (props: ISelect, itemsState: any) => {
 };
 
 export const getItemProps = (
-  props: ISelect,
+  props: IDropdown,
   dropdownOpenState: any,
   item: ListRenderItemInfo<any>
 ) => {
   const [_, setIsOpen] = dropdownOpenState;
   const cprops: IButton = get(props, "itemProps", {});
-  let isActive = getValue(props, item.item) === props.value;
   let label = getLabel(props, item.item);
+  const onPressButton = get(item, "item.onPress", undefined);
 
   const onPress = (e: any) => {
     setIsOpen(false);
-    setTimeout(() => {
-      let value = getValue(props, item.item);
-      if (props.onChange) {
-        props.onChange(value, item.item);
-      }
-    }, 0);
+    if (!!onPressButton) {
+      setTimeout(() => {
+        onPressButton(e);
+      }, 0);
+    }
   };
 
   let className = `m-0 p-0 px-2 rounded-t-none bg-white border-b border-gray-200 text-gray-600 active:bg-gray-200 active:border-b-2 active:border-gray-400`;
-
-  if (typeof Themes.inputStyle === "string") {
-    className = `${className} ${Themes.inputStyle}`;
-  }
-
   className = `${className} ${get(props, "itemProps.className", "")}`;
 
   const labelProps: IText = get(props, "labelProps", {});
@@ -546,7 +436,6 @@ export const getItemProps = (
   return {
     ...cprops,
     ...trimObject(item.item, ["value", "label"]),
-    isActive,
     label,
     fill: true,
     onPress,
@@ -555,74 +444,8 @@ export const getItemProps = (
   };
 };
 
-export const getFilterProps = (
-  props: ISelect,
-  filterState: any,
-  btnPosState: any,
-  buttonRef: any
-) => {
-  const [_, setposstate] = btnPosState;
-  const [filter, setfilter] = filterState;
-  const onChange = (value: string) => {
-    setfilter(value);
-
-    // donFilter(props, value);
-  };
-  const cprops: ITextInput = get(props, "filterProps", {});
-  const getPos = () => {
-    if (!!buttonRef.current) {
-      buttonRef.current?.measure(
-        (
-          x: number,
-          y: number,
-          width: number,
-          height: number,
-          pageX: number,
-          pageY: number
-        ) => {
-          setposstate({
-            x,
-            y,
-            width,
-            height,
-            pageX,
-            pageY,
-          });
-        }
-      );
-    }
-  };
-  const onFocus = (e: any) => {
-    setTimeout(() => {
-      getPos();
-    }, 0);
-    if (props.filterProps?.onFocus) {
-      props.filterProps?.onFocus(e);
-    }
-  };
-  const onBlur = (e: any) => {
-    setTimeout(() => {
-      getPos();
-    }, 0);
-    if (props.filterProps?.onBlur) {
-      props.filterProps?.onBlur(e);
-    }
-  };
-  cprops.value = filter;
-  cprops.onChangeText = onChange;
-  cprops.placeholder = "Search";
-
-  const className = `z-10 ${get(props, "filterProps.className", "")}`;
-  const wrapperProps = get(props, "filterProps.wrapperProps", {});
-  const wclassName = `mt-0 ${get(wrapperProps, "className", "")}`;
-  wrapperProps.className = wclassName;
-  cprops.wrapperProps = wrapperProps;
-
-  return { ...cprops, className, autoFocus: true, onFocus, onBlur };
-};
-
 const generateWrapperStyle = (
-  props: ISelect,
+  props: IDropdown,
   animate: any,
   btnpos: any,
   wrppos: any,

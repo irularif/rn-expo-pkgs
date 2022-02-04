@@ -68,7 +68,7 @@ const Camera = (props: ICamera) => {
 const CameraPanel = (props: ICamera) => {
   const {
     visibleState,
-    optionState,
+    cameraState,
     tempUriState,
     loadingState,
     permissionState,
@@ -88,14 +88,14 @@ const CameraPanel = (props: ICamera) => {
               panelProps={props}
               tempUriState={tempUriState}
               loadingState={loadingState}
-              optionState={optionState}
+              cameraState={cameraState}
               permissionState={permissionState}
             />
             <TopActionGroup
               panelProps={props}
               visibleState={visibleState}
               tempUriState={tempUriState}
-              optionState={optionState}
+              cameraState={cameraState}
               permissionState={permissionState}
               animate={animate}
             />
@@ -103,7 +103,7 @@ const CameraPanel = (props: ICamera) => {
               panelProps={props}
               loadingState={loadingState}
               tempUriState={tempUriState}
-              optionState={optionState}
+              cameraState={cameraState}
               permissionState={permissionState}
             />
           </View>
@@ -116,7 +116,6 @@ const CameraPanel = (props: ICamera) => {
 };
 
 const CameraView = (props: any) => {
-  const [option, ___] = props.optionState;
   const [tempUri, _] = props.tempUriState;
   const [hasPermission, ____] = props.permissionState;
 
@@ -124,9 +123,14 @@ const CameraView = (props: any) => {
     props.panelProps,
     props.loadingState,
     props.permissionState,
-    props.optionState,
     props.tempUriState
   );
+
+  const imageViewProps = getImageViewProps(
+    props.panelProps,
+    props.tempUriState
+  );
+
   // const loadingProps = getLoadingProps(props.panelProps);
   if (hasPermission === false) {
     return (
@@ -138,18 +142,13 @@ const CameraView = (props: any) => {
   }
 
   if (!!tempUri) {
-    const imageViewProps = getImageViewProps(
-      props.panelProps,
-      props.tempUriState,
-      props.optionState
-    );
     return <Image {...imageViewProps} />;
   }
 
   if (!!hasPermission && !tempUri) {
     return (
       <>
-        <RNCamera {...cameraViewProps} {...option}></RNCamera>
+        <RNCamera {...cameraViewProps} {...props.cameraState}></RNCamera>
         {/* {!!isLoading && <Spinner {...loadingProps} />} */}
       </>
     );
@@ -181,10 +180,10 @@ const TopActionGroup = (props: any) => {
     props.animate
   );
   const wrapperTopActionProps = getWrapperTopActionProps(props.panelProps);
+  const flashProps = getFlashProps();
+  const ratioProps = getRatioProps();
 
   if (!!hasPermission && !tempUri) {
-    const flashProps = getFlashProps(props.optionState);
-    const ratioProps = getRatioProps(props.optionState);
     return (
       <View {...wrapperTopActionProps}>
         <Button {...backProps} />
@@ -216,13 +215,11 @@ const BottomActionGroup = (props: any) => {
   const wrapperBottomActionProps = getWrapperBottomActionProps(
     props.panelProps
   );
+  const cameraTypeProps = getCameraTypeProps();
+  const pickerProps = getImagePickerProps(props.panelProps, props.tempUriState);
+  const saveProps = getSaveImageProps(props.panelProps, props.tempUriState);
 
   if (!!hasPermission && !tempUri) {
-    const cameraTypeProps = getCameraTypeProps(props.optionState);
-    const pickerProps = getImagePickerProps(
-      props.panelProps,
-      props.tempUriState
-    );
     return (
       <View {...wrapperBottomActionProps}>
         <Button {...pickerProps} />
@@ -233,7 +230,6 @@ const BottomActionGroup = (props: any) => {
   }
 
   if (!!hasPermission) {
-    const saveProps = getSaveImageProps(props.panelProps, props.tempUriState);
     return (
       <View {...wrapperBottomActionProps}>
         <Button {...cameraCaptureProps} />

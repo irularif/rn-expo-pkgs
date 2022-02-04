@@ -1,5 +1,8 @@
 import { Themes } from "../../../system/config";
-import tailwind, { parseStyleToObject } from "../../utils/styles";
+import tailwind, {
+  parseStyleToObject,
+  trimClassName,
+} from "../../utils/styles";
 import { get } from "lodash";
 import path from "path";
 import { useEffect } from "react";
@@ -27,10 +30,11 @@ const getPickerProps = (
   };
   let className = `p-0 flex-col ${!value ? "py-4" : ""}`;
   if (typeof Themes.inputWrapperStyle === "string") {
-    let cclassName = Themes.inputWrapperStyle
-      .split(" ")
-      .filter((x) => !x.includes("error"))
-      .join(" ");
+    let cclassName = trimClassName(Themes.inputWrapperStyle, [
+      "error",
+      "focus",
+      "active",
+    ]);
     className = `${className} ${cclassName}`;
   }
   className = `${className} ${get(props, "className", "")}`;

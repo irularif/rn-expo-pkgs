@@ -1,30 +1,41 @@
-import View from "../View";
-import Text from "../Text";
 import Portal from "../Portal";
-import Button from "../Button";
-import { init } from "./generateProps";
+import Text, { IText } from "../Text";
+import View, { IView } from "../View";
+import { generateTextProps, generateWrapperProps, init } from "./generateProps";
 
-export interface IToast {}
+export interface IToast extends IView {
+  position?: "top" | "bottom";
+  messageProps?: IText;
+}
 
 const Toast = () => {
-  init();
+  const { animate, visible } = init();
 
   return (
     <Portal hostName="libs">
-      <RenderToast />
+      <RenderToast animate={animate} visible={visible} />
     </Portal>
   );
 };
 
-const RenderToast = () => {
-  const toastProps = {};
+const RenderToast = (props: any) => {
+  const wrapperProps = generateWrapperProps(props.animate);
+  const textProps = generateTextProps();
 
-  return null;
+  if (!props.visible) return null;
 
   return (
-    <Button {...toastProps}>
-      <Text>Toast</Text>
-    </Button>
+    <View {...wrapperProps}>
+      {!!wrapperProps.children ? (
+        typeof wrapperProps.children === "function" ? (
+          wrapperProps.children()
+        ) : (
+          wrapperProps.children
+        )
+      ) : (
+        <Text {...textProps} />
+      )}
+    </View>
   );
 };
 

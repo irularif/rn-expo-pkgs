@@ -220,6 +220,7 @@ const getWrapperProps = (props: ITextInput, focusState: any) => {
 
   return {
     ...cprops,
+    className: "",
     style,
     ref: cprops.componentRef,
   };
@@ -325,7 +326,10 @@ const generateStyle = (props: ITextInput) => {
   return style;
 };
 
-const generateWrapperStyle = (props: ITextInput, isFocused: boolean) => {
+const generateWrapperStyle = (
+  props: ITextInput,
+  isFocused: boolean = false
+) => {
   let style: any = {};
   let className = "flex flex-row";
 

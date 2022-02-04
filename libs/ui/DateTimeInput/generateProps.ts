@@ -1,7 +1,7 @@
 import { Themes } from "../../../system/config";
 import { dateFormat } from "../../utils/date";
 import { trimObject } from "../../utils/misc";
-import { parseStyleToObject } from "../../utils/styles";
+import { parseStyleToObject, trimClassName } from "../../utils/styles";
 import { capitalize, get } from "lodash";
 import { IDateTimeInput } from ".";
 import { IButton } from "../Button";
@@ -79,10 +79,11 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
   };
   let className = `m-0 p-0 px-2`;
   if (typeof Themes.inputWrapperStyle === "string") {
-    let cclassName = Themes.inputWrapperStyle
-      .split(" ")
-      .filter((x) => !x.includes("error"))
-      .join(" ");
+    let cclassName = trimClassName(Themes.inputWrapperStyle, [
+      "error",
+      "focus",
+      "active",
+    ]);
     className = `${className} ${cclassName}`;
   }
   if (!props.value) {

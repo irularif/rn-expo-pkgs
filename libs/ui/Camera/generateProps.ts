@@ -18,6 +18,8 @@ import { IImage } from "../Image";
 import { IModal } from "../Modal";
 import { ISpinner } from "../Spinner";
 import { IView } from "../View";
+import { useLibsDispatch, useLibsSelector } from "pkgs/libs/hooks/useLibsStore";
+import { ConfigStateAction } from "pkgs/system/store/config";
 
 const CameraRef: any = createRef();
 
@@ -26,7 +28,7 @@ const initProps = (props: ICamera) => {
   const [_, setvisibel] = visibleState;
   const animateRef = useRef(new Animated.Value(0));
   const animate = animateRef.current;
-  const optionState = initCameraOption(props);
+  const cameraState = useLibsSelector((state) => state.config.camera);
   const tempUriState = useState("");
   const loadingState = useState(false);
   const permissionState = useState(null);
@@ -57,56 +59,12 @@ const initProps = (props: ICamera) => {
 
   return {
     visibleState,
-    optionState,
+    cameraState,
     tempUriState,
     loadingState,
     permissionState,
     animate,
   };
-};
-
-const initCameraOption = (props: ICamera) => {
-  const [value, setValue] = useState({
-    type: RNCamera.Constants.Type.back,
-    flashMode: RNCamera.Constants.FlashMode.auto,
-    ratio: "4:3", // 4:3, 16:9, 1:1
-  });
-
-  const onChange = async (data: any) => {
-    Storage.set("camera-option", data);
-    setValue(data);
-  };
-
-  const init = async () => {
-    const sOption = await Storage.get("camera-option");
-    const type = get(
-      props,
-      "cameraViewProps.type",
-      RNCamera.Constants.Type.back
-    );
-    const flashMode = get(
-      props,
-      "cameraViewProps.flashMode",
-      RNCamera.Constants.FlashMode.auto
-    );
-    const ratio = get(props, "cameraViewProps.ratio", "4:3");
-    Object.assign(
-      value,
-      {
-        type,
-        flashMode,
-        ratio,
-      },
-      sOption
-    );
-    onChange(value);
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
-
-  return [value, onChange];
 };
 
 const getPanelProps = (props: IModal, animate: any, visibleState: any) => {
@@ -143,13 +101,9 @@ const getPanelProps = (props: IModal, animate: any, visibleState: any) => {
   } as IView;
 };
 
-const getImageViewProps = (
-  props: ICamera,
-  tempUriState: any,
-  optionState: any
-) => {
+const getImageViewProps = (props: ICamera, tempUriState: any) => {
   const [tempUri, _] = tempUriState;
-  const [option, __] = optionState;
+  const option = useLibsSelector((state) => state.config.camera);
   let source = {};
   if (tempUri.indexOf("file://")) {
     source = {
@@ -193,12 +147,11 @@ const getCameraViewProps = (
   props: ICamera,
   loadingState: any,
   permissionState: any,
-  optionState: any,
   tempUriState: any
 ) => {
   const [isLoading, setLoading] = loadingState;
   const [_, setPermission] = permissionState;
-  const [option, __] = optionState;
+  const option = useLibsSelector((state) => state.config.camera);
   const [tempUri, setUri] = tempUriState;
   const checkPermission = async () => {
     const { status } = await RNCamera.getCameraPermissionsAsync();
@@ -280,8 +233,9 @@ const getPermissionProps = (permissionState: any) => {
   return cprops;
 };
 
-const getFlashProps = (optionState: any) => {
-  const [option, setOption] = optionState;
+const getFlashProps = () => {
+  const dispatch = useLibsDispatch();
+  const option = useLibsSelector((state) => state.config.camera);
   const { flashMode } = option;
   const cprops: IButton = {
     prefix:
@@ -312,10 +266,13 @@ const getFlashProps = (optionState: any) => {
         flashMode = RNCamera.Constants.FlashMode.off;
         break;
     }
-    setOption({
-      ...option,
-      flashMode,
-    });
+
+    dispatch(
+      ConfigStateAction.updateCamera({
+        ...option,
+        flashMode,
+      })
+    );
   };
 
   return {
@@ -324,8 +281,9 @@ const getFlashProps = (optionState: any) => {
   };
 };
 
-const getCameraTypeProps = (optionState: any) => {
-  const [option, setOption] = optionState;
+const getCameraTypeProps = () => {
+  const dispatch = useLibsDispatch();
+  const option = useLibsSelector((state) => state.config.camera);
   const cprops: IButton = {
     prefix: {
       name: "camera-reverse",
@@ -346,10 +304,13 @@ const getCameraTypeProps = (optionState: any) => {
         type = RNCamera.Constants.Type.back;
         break;
     }
-    setOption({
-      ...option,
-      type,
-    });
+
+    dispatch(
+      ConfigStateAction.updateCamera({
+        ...option,
+        type,
+      })
+    );
   };
 
   return {
@@ -358,8 +319,9 @@ const getCameraTypeProps = (optionState: any) => {
   };
 };
 
-const getRatioProps = (optionState: any) => {
-  const [option, setOption] = optionState;
+const getRatioProps = () => {
+  const dispatch = useLibsDispatch();
+  const option = useLibsSelector((state) => state.config.camera);
   const { ratio } = option;
   const cprops: IButton = {
     label: `[${ratio}]`,
@@ -380,10 +342,13 @@ const getRatioProps = (optionState: any) => {
         ratio = "1:1";
         break;
     }
-    setOption({
-      ...option,
-      ratio,
-    });
+
+    dispatch(
+      ConfigStateAction.updateCamera({
+        ...option,
+        ratio,
+      })
+    );
   };
 
   return {
@@ -725,7 +690,6 @@ export {
   getImageViewProps,
   getCameraViewProps,
   getLoadingProps,
-  initCameraOption,
   getPermissionProps,
   getFlashProps,
   getRatioProps,

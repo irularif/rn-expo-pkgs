@@ -9,7 +9,6 @@ import { Provider } from "react-redux";
 import { FontSources } from "../../../system/autoload/fonts";
 import { IConfigStore, TRole } from "../../../types/global";
 import View from "../View";
-import ConfigProvider from "./ConfigProvider";
 import AppProviderLoading from "./Loading";
 import NavigationProvider from "./NavigationProvider";
 
@@ -58,19 +57,18 @@ const AppProvider = (props: IAppProvider) => {
   }, []);
 
   return (
-    <LibsContext.Provider value={LibsState.getState()}>
-      <ConfigProvider initialConfig={props.config}>
-        <SafeAreaProvider>
-          <View onLayout={onLayoutRootView} className="flex flex-1">
-            {!!appIsReady ? (
-              <NavigationProvider {...props} />
-            ) : (
-              <AppProviderLoading {...props} />
-            )}
-          </View>
-        </SafeAreaProvider>
-      </ConfigProvider>
-    </LibsContext.Provider>
+    // @ts-ignore
+    <Provider store={LibsState} context={LibsContext}>
+      <SafeAreaProvider>
+        <View onLayout={onLayoutRootView} className="flex flex-1">
+          {!!appIsReady ? (
+            <NavigationProvider {...props} />
+          ) : (
+            <AppProviderLoading {...props} />
+          )}
+        </View>
+      </SafeAreaProvider>
+    </Provider>
   );
 };
 

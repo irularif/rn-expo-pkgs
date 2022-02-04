@@ -1,8 +1,8 @@
 import Styles from "../../system/autoload/styles";
-import { useConfig } from "../hooks";
 import { Platform } from "react-native";
 import { create } from "tailwind-rn";
 import { FontNames } from "../../system/autoload/fonts";
+import { useLibsSelector } from "../hooks/useLibsStore";
 
 const { tailwind: RNTailwind, getColor: RNGetColor } = create(Styles);
 
@@ -12,7 +12,7 @@ const handleThemeClasses = (classes: string, isDarkMode: boolean) => {
 };
 
 const tailwind = (classes: string = "") => {
-  const { config } = useConfig();
+  const config = useLibsSelector((state) => state.config);
   let className = classes;
   let font = "";
   if (!!className) {
@@ -137,6 +137,14 @@ const trimStyle = (style: any, prefixs: string[]) => {
   return s;
 };
 
+const trimClassName = (className: string = "", prefixs: string[]) => {
+  let nclassName = className
+    .split(" ")
+    .filter((x) => prefixs.filter((y) => !!x.includes(y)).length === 0)
+    .join(" ");
+  return nclassName;
+};
+
 export {
   getColor,
   RNGetColor,
@@ -146,5 +154,6 @@ export {
   getTextStyle,
   trimTextStyle,
   trimStyle,
+  trimClassName,
 };
 export default tailwind;

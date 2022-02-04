@@ -1,11 +1,11 @@
 import { Themes } from "../../../system/config";
-import { useConfig } from "../../hooks";
 import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { get } from "lodash";
 import { ISpinner } from ".";
+import { useLibsSelector } from "pkgs/libs/hooks/useLibsStore";
 
 const getSpinnerProps = (props: ISpinner) => {
-  const { config } = useConfig();
+  const config = useLibsSelector((state) => state.config);
   const style = generateStyle(props);
   const cprops = {
     ...props,

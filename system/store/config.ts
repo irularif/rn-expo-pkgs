@@ -1,22 +1,10 @@
+import { createSlice } from "@reduxjs/toolkit";
 import { Camera } from "expo-camera";
-import { IConfigStore } from "../../types/global";
 import { cloneDeep } from "lodash";
+import Storage from "pkgs/libs/utils/storage";
+import { IConfigStore } from "../../types/global";
 
-export enum CONFIG_ACTIONS {
-  UPDATE_CAMERA,
-  UPDATE_STATUSBAR,
-  UPDATE_ALL,
-  UPDATE_THEME,
-}
-
-export interface IUpdateConfig {
-  type: CONFIG_ACTIONS;
-  data: any;
-}
-
-export type ActionTypes = IUpdateConfig;
-
-export const INITIAL_CONFIG_STATE: IConfigStore = {
+const initialConfigState: IConfigStore = {
   camera: {
     type: Camera.Constants.Type.back,
     flashMode: Camera.Constants.FlashMode.auto,
@@ -30,26 +18,36 @@ export const INITIAL_CONFIG_STATE: IConfigStore = {
   theme: "light",
 };
 
-const ConfigStore = (state: IConfigStore, action: ActionTypes) => {
-  const { type, data } = action;
-  let clonedState: IConfigStore = cloneDeep(state);
+const ConfigState = createSlice({
+  name: "config",
+  initialState: initialConfigState,
+  reducers: {
+    init(state, action) {
+      return initialConfigState;
+    },
+    update(state, action) {
+      let nstate = cloneDeep(state);
+      Object.assign(nstate, action.payload);
+      Storage.set("config", nstate);
+      return nstate;
+    },
+    updateCamera(state, action) {
+      let nstate = cloneDeep(state);
+      Object.assign(nstate.camera, action.payload);
+      Storage.set("config", nstate);
+      return nstate;
+    },
+  },
+});
 
-  switch (type) {
-    case CONFIG_ACTIONS.UPDATE_CAMERA:
-      clonedState.camera = data;
-      return clonedState;
-    case CONFIG_ACTIONS.UPDATE_STATUSBAR:
-      clonedState.statusBar = data;
-      return clonedState;
-    case CONFIG_ACTIONS.UPDATE_ALL:
-      Object.assign(clonedState.camera, data);
-      return clonedState;
-    case CONFIG_ACTIONS.UPDATE_THEME:
-      clonedState.theme = data;
-      return clonedState;
-    default:
-      return state;
-  }
+export const ConfigStateAction = {
+  ...ConfigState.actions,
+  checkStorage: () => async (dispatch: any) => {
+    let config = await Storage.get("config");
+    if (!!config) {
+      dispatch(ConfigStateAction.update(config));
+    }
+  },
 };
 
-export default ConfigStore;
+export default ConfigState;

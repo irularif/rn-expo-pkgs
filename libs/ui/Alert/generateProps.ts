@@ -1,9 +1,8 @@
-import { useAlertState } from "../../hooks/alert";
 import { get, set } from "lodash";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAlertState } from "../../hooks/alert";
 import { IButton } from "../Button";
 import { IModal } from "../Modal";
-import { trimObject } from "pkgs/libs/utils/misc";
 
 const init = () => {
   const metaState: any = useState({
@@ -35,7 +34,6 @@ export const getModalProps = () => {
     ...cprops,
     position: "center",
     visible: state.visible,
-
     onClose,
   } as IModal;
 };
