@@ -3,7 +3,7 @@ import {
   NavigationContainerRefContext,
   StackActions,
 } from "@react-navigation/native";
-import { useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 
 const useRootNavigation = () => {
   const root = useContext(NavigationContainerRefContext);
@@ -14,35 +14,42 @@ const useRootNavigation = () => {
     );
   }
   const nav = root;
-  const rootstate = nav.getRootState();
 
-  const navigate = (name: string, params: Object = {}) => {
-    nav.dispatch((state) => {
-      let pageExist = state.routeNames.indexOf(name) > -1;
-      if (!pageExist) {
-        pageExist = rootstate.routeNames.indexOf(name) > -1;
-      }
-      if (pageExist) {
-        return CommonActions.navigate(name, params);
-      } else {
-        return CommonActions.navigate("404");
-      }
-    });
-  };
+  const navigate = useCallback(
+    (name: string, params: Object = {}) => {
+      const rootstate = nav.getRootState();
+      nav.dispatch((state) => {
+        let pageExist = state.routeNames.indexOf(name) > -1;
+        if (!pageExist) {
+          pageExist = rootstate.routeNames.indexOf(name) > -1;
+        }
+        if (pageExist) {
+          return CommonActions.navigate(name, params);
+        } else {
+          return CommonActions.navigate("404");
+        }
+      });
+    },
+    [nav.getRootState, nav.dispatch]
+  );
 
-  const replace = (name: string, params: Object = {}) => {
-    nav.dispatch((state) => {
-      let pageExist = state.routeNames.indexOf(name) > -1;
-      if (!pageExist) {
-        pageExist = rootstate.routeNames.indexOf(name) > -1;
-      }
-      if (pageExist) {
-        return StackActions.replace(name, params);
-      } else {
-        return CommonActions.navigate("404");
-      }
-    });
-  };
+  const replace = useCallback(
+    (name: string, params: Object = {}) => {
+      const rootstate = nav.getRootState();
+      nav.dispatch((state) => {
+        let pageExist = state.routeNames.indexOf(name) > -1;
+        if (!pageExist) {
+          pageExist = rootstate.routeNames.indexOf(name) > -1;
+        }
+        if (pageExist) {
+          return StackActions.replace(name, params);
+        } else {
+          return CommonActions.navigate("404");
+        }
+      });
+    },
+    [nav.getRootState, nav.dispatch]
+  );
 
   return {
     ...nav,
