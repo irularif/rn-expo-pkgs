@@ -16,7 +16,6 @@ const generatePages = () => {
       ...allPages[name].router,
     });
   });
-  // aaaqaaaaaaaaaaa
 
   return pageScreens;
 };

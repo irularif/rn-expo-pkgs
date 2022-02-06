@@ -70,5 +70,17 @@
     "shadowOpacity": 0,
     "shadowRadius": 0,
     "elevation": 0
+  },
+  "text-vertical-auto": {
+    "textAlignVertical": "auto"
+  },
+  "text-vertical-bottom": {
+    "textAlignVertical": "bottom"
+  },
+  "text-vertical-center": {
+    "textAlignVertical": "center"
+  },
+  "text-vertical-top": {
+    "textAlignVertical": "top"
   }
 }

@@ -287,7 +287,7 @@ const generateStyle = (props: ITextInput) => {
   let style: any = {
     minHeight: 36,
   };
-  let className = `flex flex-1 px-1 ios:mx-1 android:mt-1 ios:pt-1`;
+  let className = `flex flex-1 ios:mx-1 android:mt-1 ios:pt-1`;
   if (typeof Themes.inputStyle === "string") {
     className = `${className} ${Themes.inputStyle}`;
   } else {
