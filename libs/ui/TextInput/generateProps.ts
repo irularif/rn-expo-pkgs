@@ -204,7 +204,7 @@ const getSecureProps = (props: ITextInput, secure: boolean, setsecure: any) => {
     size: "custom",
     onPress,
     isActive: secure,
-    className: `text-gray-500 active:text-gray-700 rounded-none m-0 px-3 ${get(
+    className: `text-gray-500 active:text-gray-700 rounded-none m-0 py-2 px-2 ${get(
       props,
       "secureButtonProps.className",
       ""
@@ -287,7 +287,7 @@ const generateStyle = (props: ITextInput) => {
   let style: any = {
     minHeight: 36,
   };
-  let className = `flex flex-1 ios:mx-1 android:mt-1 ios:pt-1`;
+  let className = `flex flex-1 android:mt-1`;
   if (typeof Themes.inputStyle === "string") {
     className = `${className} ${Themes.inputStyle}`;
   } else {

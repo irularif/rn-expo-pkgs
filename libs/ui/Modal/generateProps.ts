@@ -165,7 +165,7 @@ const generateWrapperStyle = (props: IModal, animate: any) => {
     minHeight: 160,
     minWidth: 300,
   };
-  let className = `bg-white shadow flex-shrink`;
+  let className = `bg-white flex-shrink`;
 
   if (props.position === "top") {
     className = `${className} rounded-b-md`;
@@ -185,8 +185,9 @@ const generateWrapperStyle = (props: IModal, animate: any) => {
 
   Object.assign(
     style,
-    tailwind(className)
-    // parseStyleToObject(props.wrapperProps?.style)
+    tailwind(className),
+    parseStyleToObject(props.wrapperProps?.style),
+    parseStyleToObject(props.style)
   );
 
   Object.assign(style, {
@@ -258,6 +259,8 @@ const generatePanelStyle = (props: IModal, animate: any) => {
       ],
     });
   }
+
+  Object.assign(style, parseStyleToObject(props.panelProps?.style));
 
   return style;
 };

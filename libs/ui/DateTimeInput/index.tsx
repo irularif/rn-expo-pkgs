@@ -6,7 +6,7 @@ import getButtonProps, { getDateTimeProps } from "./generateProps";
 export interface IDateTimeInput extends IButton {
   value: string;
   onChange: (value: string) => void;
-  dateTimeProps?: IDateTime;
+  dateTimeProps?: Partial<IDateTime>;
   formatValue?: string;
   formatLabel?: string;
   mode?: "datetime" | "date" | "time";

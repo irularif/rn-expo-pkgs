@@ -21,7 +21,7 @@ const theme: ITheme = {
   fieldStyle: "",
   inputStyle: "text-gray-600",
   inputWrapperStyle:
-    "border border-gray-300 rounded-md bg-white error:bg-red-50 error:border error:border-red-300",
+    "border border-gray-300 rounded-md bg-white error:bg-red-50 error:border error:border-red-300 px-2",
   placeholderStyle: "",
 };
 

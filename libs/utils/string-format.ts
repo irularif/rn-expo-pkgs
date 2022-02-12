@@ -1,14 +1,19 @@
 export const moneyFormat = (
   number: string | number,
   prefix: string = "",
-  decimal = false
+  option?: {
+    decimal?: boolean;
+    sperator?: string;
+  }
 ) => {
+  const decimal = option?.decimal || false;
+  const sperator = option?.sperator || ",";
   let val = !number
     ? parseFloat("0")
     : typeof number == "string"
     ? parseFloat(number)
     : number;
-  let res = val.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
+  let res = val.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, `$&${sperator}`);
   if (!decimal) res = String(res).substr(0, res.length - 3);
   return `${prefix}${res}`;
 };

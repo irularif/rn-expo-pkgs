@@ -96,12 +96,19 @@ const getInputProps = (props: IField) => {
     }
   };
 
-  let className = `mb-1 ${get(props, "inputProps.className", "")}`;
+  let className = `${get(props, "inputProps.className", "")}`;
   if (props.readonly) {
     className = `${className}`;
   }
 
-  const onSubmitEditing = () => {
+  const onSubmitEditing = (e: any) => {
+    let value = getValue(e);
+    onFieldChange(path, value);
+    // @ts-ignore
+    if (props.inputProps?.onSubmitEditing) {
+      // @ts-ignore
+      props.inputProps.onSubmitEditing(e);
+    }
     let idx = form.fields.findIndex((x) => x.path === props.path);
     if (idx > -1) {
       if (!!refs.current[form.fields[idx + 1]?.path]) {

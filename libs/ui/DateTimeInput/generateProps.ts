@@ -77,7 +77,7 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
   const onPress = (e: any) => {
     setVisible(true);
   };
-  let className = `m-0`;
+  let className = `m-0 p-0 px-2`;
   if (typeof Themes.inputWrapperStyle === "string") {
     let cclassName = trimClassName(Themes.inputWrapperStyle, [
       "error",
