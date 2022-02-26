@@ -13,7 +13,7 @@ const useRootNavigation = () => {
       "Couldn't find a navigation object. Is your component inside NavigationContainer?"
     );
   }
-  const nav = root;
+  const nav = useMemo(() => root, [root]);
 
   const navigate = useCallback(
     (name: string, params: Object = {}) => {

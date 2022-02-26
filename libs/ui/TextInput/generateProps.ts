@@ -1,7 +1,7 @@
 import { Themes } from "../../../system/config";
 import { trimObject } from "../../utils/misc";
 import tailwind, { parseStyleToObject } from "../../utils/styles";
-import { get, set } from "lodash";
+import { get, isNull, isUndefined, set } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import { TextInputProps } from "react-native";
 import { ITextInput } from ".";
@@ -29,7 +29,8 @@ const getTextInputProps = (
     "clearButtonProps",
   ]);
 
-  const value = props.value || "";
+  const value =
+    isNull(props.value) || isUndefined(props.value) ? "" : props.value;
   const type = props.type;
   // const pattern = props.mask;
   const [selection, setselection] = useState({
@@ -82,7 +83,7 @@ const getTextInputProps = (
     switch (props.type) {
       case "number":
         let b = text.replace(/[^0-9]/g, "");
-        v = b || "";
+        v = isUndefined(b) || isNull(b) ? "" : b;
         break;
       case "decimal":
         let c = text.replace(/[^0-9]/g, "");

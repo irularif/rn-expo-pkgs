@@ -3,6 +3,7 @@ import { get } from "lodash";
 import { IImage } from ".";
 import * as FileSystem from "expo-file-system";
 import { useEffect, useState } from "react";
+import Icon404 from "../../../assets/images/404.svg";
 
 const checkImageInCache = async (uri: string) => {
   try {
@@ -22,8 +23,13 @@ const cacheImage = async (link: string, localUrl: string, callback: any) => {
     );
 
     const res = await downloadImage.downloadAsync();
-    if (!!res) {
+    if (!!res && res?.status === 200) {
       return res.uri;
+    } else {
+      let imgInCache = await checkImageInCache(localUrl);
+      if (!!imgInCache && !!imgInCache?.exists) {
+        await FileSystem.deleteAsync(localUrl);
+      }
     }
 
     return false;
@@ -33,31 +39,79 @@ const cacheImage = async (link: string, localUrl: string, callback: any) => {
   }
 };
 
-const getImageProps = (props: IImage) => {
-  const style = generateStyle(props);
+const ensureDirExists = async (dir: string) => {
+  const dirInfo = await FileSystem.getInfoAsync(dir);
+  if (!dirInfo.exists) {
+    await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
+  }
+};
+
+export const init = (props: IImage) => {
+  const statusState = useState("loading");
+  const [status, setstatus] = statusState;
   const uri = get(props, "source.uri", "");
-  const encodedLink = encodeURI(uri);
-  const cacheKey = props.cacheKey || "";
-  const [imgUrl, setUrl] = useState(`${FileSystem.cacheDirectory}${cacheKey}`);
+  let fileName = "";
+  const cacheKey = props.cacheKey || fileName;
+  const dir = FileSystem.cacheDirectory + "images/";
+  let cacheFileUri = `${dir}${cacheKey}`;
+  if (!!uri) {
+    const uripath = uri?.split("/");
+    fileName = uripath[uripath.length - 1];
+    if (uri.indexOf("file://") === 0) {
+      cacheFileUri = uri;
+    }
+  }
+  const [imgUrl, setUrl] = useState(`${cacheFileUri}`);
+
   const init = async () => {
-    const cacheFileUri = `${FileSystem.cacheDirectory}${cacheKey}`;
+    if (typeof props.source === "object" && !!uri && !fileName) {
+      setstatus("error");
+      return;
+    }
+
+    if (
+      typeof props.source === "object" &&
+      !!uri &&
+      uri.indexOf("file://") === 0
+    ) {
+      setstatus("ready");
+      return;
+    }
+
+    await ensureDirExists(dir);
     let imgInCache = await checkImageInCache(cacheFileUri);
 
     if (!!uri && (imgInCache === false || !imgInCache?.exists)) {
-      let cached = await cacheImage(encodedLink, cacheFileUri, () => {});
-      if (cached) {
-        setUrl(`${cacheFileUri}/m`);
-        setUrl(cached);
+      const encodedLink = encodeURI(uri);
+      let cached = await cacheImage(encodedLink, cacheFileUri, (e: any) => {});
+      if (!cached) {
+        setUrl(uri);
+        setstatus("error");
+        return;
+      } else {
+        if (status !== "ready") {
+          setstatus("ready");
+        }
       }
     }
+
+    setstatus("ready");
   };
 
   useEffect(() => {
     init();
-  }, []);
+  }, [uri]);
 
+  return {
+    imgUrl,
+    status,
+  };
+};
+
+const getImageProps = (props: IImage, imgUrl: string) => {
+  const style = generateStyle(props);
   let source = props.source;
-  if (!!uri) {
+  if (!!imgUrl) {
     source = {
       uri: imgUrl,
     };
@@ -67,6 +121,38 @@ const getImageProps = (props: IImage) => {
     ...props,
     style,
     ref: props.componentRef,
+  };
+};
+
+export const getWrapperProps = (props: IImage) => {
+  const cprops = get(props, "wrapperProps", {});
+
+  return cprops;
+};
+
+export const getShimmerProps = (props: IImage) => {
+  const cprops: any = get(props, "shimmerProps", {});
+  const className = `absolute inset-0 ${cprops?.className || ""}`;
+
+  return {
+    cprops,
+    className,
+    style: parseStyleToObject(cprops.style, className),
+  };
+};
+
+export const getErrorProps = (props: IImage) => {
+  const cprops: any = get(props, "errorProps", {});
+  const className = `absolute inset-0 bg-white items-center justify-center ${
+    cprops?.className || ""
+  }`;
+  const name = Icon404;
+
+  return {
+    name,
+    size: "80%",
+    ...cprops,
+    className,
   };
 };
 

@@ -1,16 +1,16 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { navigationRef } from "../../utils/navigation";
-import generatePages from "../../../system/autoload/pages";
+import { useLibsDispatch } from "pkgs/libs/hooks/useLibsStore";
+import { ConfigStateAction } from "pkgs/system/store/config";
 import React, { useEffect, useState } from "react";
 import { TRole } from "root/types/global";
 import { IAppProvider } from ".";
-import Alert from "../Alert";
+import generatePages from "../../../system/autoload/pages";
+import { navigationRef } from "../../utils/navigation";
+import Confirmation from "../Confirmation";
 import PortalProvider from "../Portal/PortalProvider";
-import AppProviderLoading from "./Loading";
 import Toast from "../Toast";
-import { useLibsDispatch } from "pkgs/libs/hooks/useLibsStore";
-import { ConfigStateAction } from "pkgs/system/store/config";
+import AppProviderLoading from "./Loading";
 
 const Stack = createNativeStackNavigator();
 
@@ -71,25 +71,24 @@ const NavigationProvider = (props: IAppProvider) => {
       <>
         <NavigationContainer {...props.navigationProps} ref={navigationRef}>
           <PortalProvider>
-            <Alert>
-              <Stack.Navigator
-                {...props.stackNavigatorProps}
-                screenOptions={{
-                  headerTransparent: true,
-                  presentation: "card",
-                  headerShown: false,
-                  ...props.stackNavigatorProps?.screenOptions,
-                }}
-                defaultScreenOptions={{
-                  headerTransparent: true,
-                }}
-              >
-                {routes.map((screen: any, key: number) => (
-                  <Stack.Screen key={key} {...screen} />
-                ))}
-              </Stack.Navigator>
-              <Toast />
-            </Alert>
+            <Stack.Navigator
+              {...props.stackNavigatorProps}
+              screenOptions={{
+                headerTransparent: true,
+                presentation: "card",
+                headerShown: false,
+                ...props.stackNavigatorProps?.screenOptions,
+              }}
+              defaultScreenOptions={{
+                headerTransparent: true,
+              }}
+            >
+              {routes.map((screen: any, key: number) => (
+                <Stack.Screen key={key} {...screen} />
+              ))}
+            </Stack.Navigator>
+            <Toast />
+            <Confirmation />
           </PortalProvider>
         </NavigationContainer>
       </>

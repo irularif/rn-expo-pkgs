@@ -6,6 +6,7 @@ import getSpinnerProps, { getWrapperProps } from "./generateProps";
 
 export interface ISpinner extends IComponent, ActivityIndicatorProps {
   wrapperProps?: IView;
+  children?: any;
 }
 
 const Spinner = (props: ISpinner) => {

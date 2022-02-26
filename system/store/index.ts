@@ -3,12 +3,14 @@ import { applyMiddleware, combineReducers, createStore } from "redux";
 import ConfigState from "./config";
 import ToastState from "./toast";
 import thunkMiddleware from "redux-thunk";
+import ConfirmationState from "./confirmation";
 
 export const configureStore = () => {
   const middlewareEnhancer = applyMiddleware(thunkMiddleware);
   const rootReducer = combineReducers({
     toast: ToastState.reducer,
     config: ConfigState.reducer,
+    confirmation: ConfirmationState.reducer,
   });
 
   const store = createStore(rootReducer, {}, middlewareEnhancer);

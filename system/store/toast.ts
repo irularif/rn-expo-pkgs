@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { cloneDeep } from "lodash";
+import { IButton } from "pkgs/libs/ui/Button";
 import { IToast } from "pkgs/libs/ui/Toast";
 
 export interface IToastStore {
   message: string;
   duration: number;
+  actions?: IButton[];
   props?: Partial<IToast>;
 }
 
@@ -13,9 +15,10 @@ export interface IBaseToast extends IToastStore {
 }
 
 const initialToastState: IBaseToast = {
-  message: "",
   duration: 0,
+  message: "",
   init: false,
+  actions: [],
   props: {},
 };
 

@@ -1,10 +1,11 @@
 import { get } from "lodash";
+import useKeyboard, { IKeyboard } from "pkgs/libs/hooks/useKeyboard";
 import { useLibsDispatch, useLibsSelector } from "pkgs/libs/hooks/useLibsStore";
 import { trimObject } from "pkgs/libs/utils/misc";
 import tailwind from "pkgs/libs/utils/styles";
 import { ToastStateAction } from "pkgs/system/store/toast";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions } from "react-native";
+import { Animated, Dimensions, Platform } from "react-native";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import { IToast } from ".";
 import { IView } from "../View";
@@ -17,6 +18,7 @@ export const init = () => {
   const dispatch = useLibsDispatch();
   const toast = useLibsSelector((state) => state.toast);
   const [visible, setvisible] = useState(false);
+  const currentAnim = useRef<any>();
 
   const run = () => {
     Animated.timing(animate, {
@@ -25,13 +27,14 @@ export const init = () => {
       useNativeDriver: true,
     }).start(({ finished }) => {
       if (finished) {
-        setTimeout(() => {
+        currentAnim.current = setTimeout(() => {
           Animated.timing(animate, {
             toValue: 0,
             duration: 200,
             useNativeDriver: true,
           }).start(({ finished }) => {
             if (finished) {
+              setvisible(false);
               dispatch(ToastStateAction.init({}));
             }
           });
@@ -41,11 +44,22 @@ export const init = () => {
   };
 
   useEffect(() => {
-    setvisible(toast.init);
     if (!!toast.init) {
+      setvisible(toast.init);
       run();
+    } else if (!toast.init && !!currentAnim.current) {
+      clearTimeout(currentAnim.current);
+      Animated.timing(animate, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (finished) {
+          setvisible(false);
+        }
+      });
     }
-  }, [toast.init]);
+  }, [toast]);
 
   return {
     animate,
@@ -54,13 +68,19 @@ export const init = () => {
 };
 
 export const generateWrapperProps = (animate: any) => {
+  const keyboardState = useKeyboard();
   const inset = useSafeAreaInsets();
   const toast = useLibsSelector((state) => state.toast);
   const cprops = trimObject(get(toast, "props", {}), [
     "className",
     "messageProps",
   ]);
-  const style = generateWrapperStyle(get(toast, "props", {}), animate, inset);
+  const style = generateWrapperStyle(
+    get(toast, "props", {}),
+    animate,
+    inset,
+    keyboardState
+  );
 
   return {
     ...cprops,
@@ -84,11 +104,12 @@ export const generateTextProps = () => {
 const generateWrapperStyle = (
   props: IToast,
   animate: any,
-  inset: EdgeInsets
+  inset: EdgeInsets,
+  keyboardState: IKeyboard
 ) => {
   let style: any = {};
   let className =
-    "absolute left-0 right-0 bg-opacity-0 rounded m-4 bg-gray-700 p-2 px-4";
+    "absolute left-0 right-0 bg-opacity-0 rounded m-4 bg-gray-700 p-2 px-4 z-50";
   if (props.position === "top") {
     style = {
       top: inset.top,
@@ -97,6 +118,9 @@ const generateWrapperStyle = (
     style = {
       bottom: inset.bottom,
     };
+    if (keyboardState.isVisible && Platform.OS === "ios") {
+      style.bottom += keyboardState.height;
+    }
   }
   className = `${className} ${get(props, "className", "")}`;
   Object.assign(style, tailwind(className));

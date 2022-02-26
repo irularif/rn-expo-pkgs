@@ -4,7 +4,6 @@ import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import LibsState, { LibsContext } from "pkgs/system/store";
 import React, { useCallback, useEffect, useState } from "react";
-import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import { FontSources } from "../../../system/autoload/fonts";
@@ -22,8 +21,6 @@ export interface IAppProvider {
   disableAppCenter?: boolean;
   config?: Partial<IConfigStore>;
 }
-
-// const store = configureStore(MiddlewareArgs);
 
 const AppProvider = (props: IAppProvider) => {
   const [isReady, setIsReady] = useState(false);

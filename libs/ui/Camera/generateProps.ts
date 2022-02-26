@@ -5,21 +5,21 @@ import {
   CameraProps,
 } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import imageResizer from "../../utils/image-resizer";
-import Storage from "../../utils/storage";
-import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { get, set } from "lodash";
+import { useLibsDispatch, useLibsSelector } from "pkgs/libs/hooks/useLibsStore";
+import Alert from "pkgs/libs/utils/alert";
+import { ConfigStateAction } from "pkgs/system/store/config";
 import { createRef, useCallback, useEffect, useRef, useState } from "react";
-import { Alert, Animated, BackHandler, Dimensions } from "react-native";
+import { Animated, BackHandler, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ICamera } from ".";
+import imageResizer from "../../utils/image-resizer";
+import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { IButton } from "../Button";
 import { IImage } from "../Image";
 import { IModal } from "../Modal";
 import { ISpinner } from "../Spinner";
 import { IView } from "../View";
-import { useLibsDispatch, useLibsSelector } from "pkgs/libs/hooks/useLibsStore";
-import { ConfigStateAction } from "pkgs/system/store/config";
 
 const CameraRef: any = createRef();
 
@@ -217,7 +217,7 @@ const getLoadingProps = (props: ICamera) => {
   };
 };
 
-const getPermissionProps = (permissionState: any) => {
+const getPermissionProps = (props: ICamera, permissionState: any) => {
   const [_, setPermission] = permissionState;
   const onPress = async () => {
     const { status } = await RNCamera.requestCameraPermissionsAsync();
@@ -225,15 +225,21 @@ const getPermissionProps = (permissionState: any) => {
   };
   const cprops: IButton = {
     label: "Enable Camera Access",
-    onPress,
     variant: "link",
     className: "text-blue-600 bg-gray-100 bg-opacity-25",
   };
+  Object.assign(
+    cprops,
+    get(props, "cameraViewProps.permissionButtonProps", false)
+  );
 
-  return cprops;
+  return {
+    ...cprops,
+    onPress,
+  };
 };
 
-const getFlashProps = () => {
+const getFlashProps = (props: ICamera) => {
   const dispatch = useLibsDispatch();
   const option = useLibsSelector((state) => state.config.camera);
   const { flashMode } = option;
@@ -252,6 +258,9 @@ const getFlashProps = () => {
     variant: "link",
     className: "text-white text-base bg-gray-100 bg-opacity-25 w-16 h-12",
   };
+
+  Object.assign(cprops, get(props, "cameraViewProps.flashButtonProps", false));
+
   const onPress = () => {
     let { flashMode } = option;
     switch (flashMode) {
@@ -281,7 +290,7 @@ const getFlashProps = () => {
   };
 };
 
-const getCameraTypeProps = () => {
+const getCameraTypeProps = (props: ICamera) => {
   const dispatch = useLibsDispatch();
   const option = useLibsSelector((state) => state.config.camera);
   const cprops: IButton = {
@@ -293,6 +302,9 @@ const getCameraTypeProps = () => {
     className: "text-white text-base bg-gray-100 bg-opacity-25 w-16 h-16",
     size: "custom",
   };
+
+  Object.assign(cprops, get(props, "cameraViewProps.cameraButtonProps", false));
+
   const onPress = () => {
     let { type } = option;
     switch (type) {
@@ -319,7 +331,7 @@ const getCameraTypeProps = () => {
   };
 };
 
-const getRatioProps = () => {
+const getRatioProps = (props: ICamera) => {
   const dispatch = useLibsDispatch();
   const option = useLibsSelector((state) => state.config.camera);
   const { ratio } = option;
@@ -328,6 +340,9 @@ const getRatioProps = () => {
     variant: "link",
     className: "text-white text-base bg-gray-100 bg-opacity-25 w-16 h-12",
   };
+
+  Object.assign(cprops, get(props, "cameraViewProps.ratioButtonProps", false));
+
   const onPress = () => {
     let { ratio } = option;
     switch (ratio) {
@@ -383,6 +398,19 @@ const getCameraCaptureProps = (
     size: "custom",
     disabled: isLoading,
   };
+
+  if (!!tempUri) {
+    Object.assign(
+      cprops,
+      get(props, "cameraViewProps.reloadButtonProps", false)
+    );
+  } else {
+    Object.assign(
+      cprops,
+      get(props, "cameraViewProps.captureButtonProps", false)
+    );
+  }
+
   const option: CameraPictureOptions = {};
   Object.assign(
     option,
@@ -426,7 +454,10 @@ const getCameraCaptureProps = (
               if (!!isLoading) {
                 setLoading(false);
               }
-              Alert.alert("Alert", msg);
+              Alert.toast({
+                duration: 3000,
+                message: msg,
+              });
               reject(null);
             });
         }
@@ -438,7 +469,10 @@ const getCameraCaptureProps = (
         if (!!isLoading) {
           setLoading(false);
         }
-        Alert.alert("Alert", msg);
+        Alert.toast({
+          duration: 3000,
+          message: msg,
+        });
         reject(null);
       }
     });
@@ -511,6 +545,11 @@ const getImagePickerProps = (props: ICamera, tempUriState: any) => {
     disabled: props.imagePicker === false,
   };
 
+  Object.assign(
+    cprops,
+    get(props, "cameraViewProps.galleryButtonProps", false)
+  );
+
   return {
     ...cprops,
     onPress,
@@ -534,6 +573,8 @@ const getSaveImageProps = (props: ICamera, tempUriState: any) => {
     size: "custom",
   };
 
+  Object.assign(cprops, get(props, "cameraViewProps.saveButtonProps", false));
+
   return {
     ...cprops,
     onPress,
@@ -554,6 +595,9 @@ export const getBackProps = (
     variant: "link",
     className: "text-white text-base bg-gray-100 bg-opacity-25 w-16 h-12",
   };
+
+  Object.assign(cprops, get(props, "cameraViewProps.backButtonProps", false));
+
   const onPress = () => {
     Animated.timing(animate, {
       toValue: 0,

@@ -1,3 +1,5 @@
+import { useLibsSelector } from "pkgs/libs/hooks/useLibsStore";
+import Button from "../Button";
 import Portal from "../Portal";
 import Text, { IText } from "../Text";
 import View, { IView } from "../View";
@@ -19,6 +21,7 @@ const Toast = () => {
 };
 
 const RenderToast = (props: any) => {
+  const { actions } = useLibsSelector((state) => state.toast);
   const wrapperProps = generateWrapperProps(props.animate);
   const textProps = generateTextProps();
 
@@ -35,6 +38,9 @@ const RenderToast = (props: any) => {
       ) : (
         <Text {...textProps} />
       )}
+      {actions?.map((action) => (
+        <Button {...action} />
+      ))}
     </View>
   );
 };

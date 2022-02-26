@@ -68,8 +68,8 @@ const getColor = (color: string): any => {
   return RNGetColor(color);
 };
 
-const parseStyleToObject = (styles: any) => {
-  let style = {};
+const parseStyleToObject = (styles: any = {}, className: string = "") => {
+  let style = tailwind(className);
   if (Array.isArray(styles)) {
     for (let s of styles) {
       if (!!s && typeof s === "object") {

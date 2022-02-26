@@ -6,6 +6,7 @@ import {
   ScrollViewProps,
   StyleProp,
   ViewStyle,
+  Animated,
 } from "react-native";
 import { IComponent } from "../../../types/global";
 import getScrollViewProps, {
@@ -30,6 +31,9 @@ const ScrollView = (props: IScrollView) => {
   const scrollViewProps = getScrollViewProps(props);
   const keyboarAvoidingViewProps = getKeyboardAvoidingViewProps(props);
   let Component: any = RNScrollView;
+  if (props.type === "animated") {
+    Component = Animated.ScrollView;
+  }
 
   return (
     <KeyboardAvoidingView {...keyboarAvoidingViewProps}>

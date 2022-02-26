@@ -9,7 +9,7 @@ import { IImageResizer } from "../../utils/image-resizer";
 import React from "react";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import Button from "../Button";
+import Button, { IButton } from "../Button";
 import Image, { IImage } from "../Image";
 import Portal from "../Portal";
 import { ISpinner } from "../Spinner";
@@ -38,6 +38,14 @@ export interface ICameraView extends IComponent, CameraProps {
   compressImage?: boolean;
   compressImageProps?: Partial<IImageResizer>;
   children?: undefined;
+  buttonGalleryProps?: IButton;
+  saveButtonProps?: IButton;
+  captureButtonProps?: IButton;
+  backButtonProps?: IButton;
+  ratioButtonProps?: IButton;
+  flashButtonProps?: IButton;
+  cameraButtonProps?: IButton;
+  reloadButtonProps?: IButton;
 }
 
 export interface ICamera {
@@ -158,7 +166,10 @@ const CameraView = (props: any) => {
 };
 
 const PermissionView = (props: any) => {
-  const buttonProps = getPermissionProps(props.permissionState);
+  const buttonProps = getPermissionProps(
+    props.panelProps,
+    props.permissionState
+  );
 
   return (
     <View className="flex flex-1 justify-center items-center p-8">
@@ -180,8 +191,8 @@ const TopActionGroup = (props: any) => {
     props.animate
   );
   const wrapperTopActionProps = getWrapperTopActionProps(props.panelProps);
-  const flashProps = getFlashProps();
-  const ratioProps = getRatioProps();
+  const flashProps = getFlashProps(props.panelProps);
+  const ratioProps = getRatioProps(props.panelProps);
 
   if (!!hasPermission && !tempUri) {
     return (
@@ -215,29 +226,37 @@ const BottomActionGroup = (props: any) => {
   const wrapperBottomActionProps = getWrapperBottomActionProps(
     props.panelProps
   );
-  const cameraTypeProps = getCameraTypeProps();
+  const cameraTypeProps = getCameraTypeProps(props.panelProps);
   const pickerProps = getImagePickerProps(props.panelProps, props.tempUriState);
   const saveProps = getSaveImageProps(props.panelProps, props.tempUriState);
-
-  if (!!hasPermission && !tempUri) {
-    return (
-      <View {...wrapperBottomActionProps}>
-        <Button {...pickerProps} />
-        <Button {...cameraCaptureProps} />
-        <Button {...cameraTypeProps} />
-      </View>
-    );
-  }
 
   if (!!hasPermission) {
     return (
       <View {...wrapperBottomActionProps}>
-        <Button {...cameraCaptureProps} />
-        <Button {...saveProps} />
-        <View className="w-16" />
+        <Button {...pickerProps} />
+        {!!tempUri ? (
+          tempUri !== props.panelProps.uri && <Button {...saveProps} />
+        ) : (
+          <Button {...cameraCaptureProps} />
+        )}
+        {!tempUri ? (
+          <Button {...cameraTypeProps} />
+        ) : (
+          <Button {...cameraCaptureProps} />
+        )}
       </View>
     );
   }
+
+  // if (!!hasPermission) {
+  //   return (
+  //     <View {...wrapperBottomActionProps}>
+  //       <Button {...cameraCaptureProps} />
+  //       <Button {...saveProps} />
+  //       <View className="w-16" />
+  //     </View>
+  //   );
+  // }
 
   return null;
 };

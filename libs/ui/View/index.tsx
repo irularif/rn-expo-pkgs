@@ -9,8 +9,10 @@ export interface IView extends IComponent {
   type?: "default" | "animated";
 }
 
+const AnimatedView = Animated.createAnimatedComponent(RNView);
+
 const View = (props: IView) => {
-  const Component = props.type === "animated" ? Animated.View : RNView;
+  const Component = props.type === "animated" ? AnimatedView : RNView;
   const viewProps = getViewProps(props);
 
   return (

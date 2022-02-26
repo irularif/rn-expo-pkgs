@@ -20,6 +20,8 @@ const getFieldProps = (props: IField) => {
           label: props.label,
           error: "",
         });
+      } else {
+        state.fields[idx].label = props.label;
       }
     }
   };

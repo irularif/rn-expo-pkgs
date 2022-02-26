@@ -1,5 +1,5 @@
 import { cloneDeep, debounce, get, set } from "lodash";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IForm } from ".";
 import { IFormState, IFormStore } from "../../../types/global";
 import { trimObject } from "../../utils/misc";
@@ -25,14 +25,15 @@ const onChange = debounce((props, meta) => {
 }, 500);
 
 const onValidate = debounce(async (field, meta, setMeta) => {
-  let nmeta = cloneDeep(meta);
-  let fields = await validateForm(nmeta, field);
-  nmeta.fields = fields;
-  setMeta(nmeta);
+  let fields = await validateForm(meta, field);
+  meta.fields = fields;
+  setMeta(meta);
 }, 500);
 
 const validateForm = async (state: any, field: string = "") => {
   let { data, errors, scheme, fields } = cloneDeep(state);
+  let nfields = cloneDeep(fields);
+
   if (!!scheme) {
     try {
       const validateData = prepareDataForValidation(data);
@@ -44,12 +45,12 @@ const validateForm = async (state: any, field: string = "") => {
         })
         .then((_: any) => {
           if (!!field) {
-            let idx = fields.findIndex((x: any) => x.path === field);
+            let idx = nfields.findIndex((x: any) => x.path === field);
             if (idx > -1) {
-              fields[idx].error = "";
+              nfields[idx].error = "";
             }
           } else {
-            fields = fields.map((x: any) => ({
+            nfields = nfields.map((x: any) => ({
               ...x,
               error: "",
             }));
@@ -58,12 +59,12 @@ const validateForm = async (state: any, field: string = "") => {
         .catch((e: any) => {
           if (e.name === "ValidationError") {
             let err: any = yupToFormErrors(e);
-            err = formatErrors(err, fields);
+            err = formatErrors(err, nfields);
             if (!!err && !!field) {
-              let idx = fields.findIndex((x: any) => x.path === field);
-              fields[idx].error = err[field];
+              let idx = nfields.findIndex((x: any) => x.path === field);
+              nfields[idx].error = err[field];
             } else {
-              fields = fields.map((x: any) => ({
+              nfields = nfields.map((x: any) => ({
                 ...x,
                 error: get(err, x.path, ""),
               }));
@@ -80,8 +81,7 @@ const validateForm = async (state: any, field: string = "") => {
       console.warn(error);
     }
   }
-
-  return fields;
+  return nfields;
 };
 
 const initForm = (props: IForm): IFormStore => {
@@ -93,13 +93,21 @@ const initForm = (props: IForm): IFormStore => {
   const refs = useRef();
 
   const initForm = () => {
-    setMeta({
+    const meta = {
       ...INITIAL_FORM_STATE,
       data,
       initialData,
       scheme,
       init: true,
-    });
+    };
+    if (!!scheme) {
+      meta.fields = Object.keys(scheme).map((key) => ({
+        path: key,
+        label: "",
+        error: "",
+      }));
+    }
+    setMeta(meta);
   };
 
   const updateData = () => {

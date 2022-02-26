@@ -1,4 +1,3 @@
-import { generatePaging } from "app/store/misc";
 import { cloneDeep, merge } from "lodash";
 import API, { IAPI } from "pkgs/libs/utils/api";
 import Storage from "pkgs/libs/utils/storage";
@@ -24,7 +23,8 @@ export type TFetchCallback<S> = (res: any) =>
       data: S;
       total?: number;
     }
-  | undefined;
+  | undefined
+  | void;
 
 export interface IFetchState<S> {
   data: S;
@@ -34,15 +34,35 @@ export interface IFetchState<S> {
   isRefresh: boolean;
 }
 
+export interface IFetchData<S> {
+  state: IFetchState<S>;
+  setState: React.Dispatch<React.SetStateAction<TFetchData<S>>>;
+  fetch: (refresh?: boolean, api?: IAPI) => Promise<any>;
+}
+
+export const generatePaging = (
+  current_total: number = 0,
+  total_data: number = 0,
+  limit: number = 100
+) => {
+  const page = Math.floor(total_data / limit);
+  const curr_page = Math.floor(current_total / limit);
+  const offset = current_total;
+
+  return {
+    can_next: !total_data ? true : curr_page < page,
+    current_page: curr_page,
+    page: curr_page + 1,
+    limit,
+    offset,
+  };
+};
+
 const useFetchData = <S = undefined>(
   initialData: S,
   config: IFetchConfig,
   callback?: TFetchCallback<S>
-): {
-  state: IFetchState<S>;
-  setState: React.Dispatch<React.SetStateAction<TFetchData<S>>>;
-  fetch: (refresh?: boolean) => Promise<any>;
-} => {
+): IFetchData<S> => {
   const { disablePaging, disableCache, disableFetchOnInit, api, cacheKey } =
     config;
   const ref = useRef<AbortController>();
@@ -52,16 +72,20 @@ const useFetchData = <S = undefined>(
   const [isLoading, setloading] = useState<boolean>(false);
   const [isRefresh, setrefresh] = useState<boolean>(false);
   const [total, settoal] = useState(0);
-  const [data, setdata] = useState<S>(cloneDeep(initialData));
+  const ninitialData = cloneDeep(initialData);
+  const [data, setdata] = useState<S>(ninitialData);
 
-  const buildUrl = () => {
+  const buildUrl = (_api: IAPI) => {
+    const params = api.params || {};
+    const _params = _api?.params || {};
+    Object.assign(params, _params);
     let url = api.url || "";
-    if (!!api.params) {
+    if (!!params) {
       url += "?";
-      Object.keys(api.params).forEach((key, idx) => {
-        if (idx > 0) url += "&";
-        if (!!api.params[key]) {
-          url += `${key}=${api.params[key]}`;
+      Object.keys(params).forEach((key, idx) => {
+        if (!!params[key]) {
+          if (idx > 0) url += "&";
+          url += `${key}=${params[key]}`;
         }
       });
     }
@@ -69,30 +93,49 @@ const useFetchData = <S = undefined>(
     return url;
   };
 
-  const getAPIParams = (): IAPI => {
-    let params = {};
-    if (!disablePaging && Array.isArray(data)) {
-      const { can_next, limit, offset } = generatePaging(data.length, total);
-      if (can_next) {
-        params = {
-          limit,
-          offset,
-        };
+  const getAPIParams = useCallback(
+    (_api: IAPI, refresh: boolean): IAPI => {
+      let params: any = {};
+      if (!disablePaging && Array.isArray(data)) {
+        const { can_next, limit, offset, page } = generatePaging(
+          refresh ? 0 : data.length,
+          refresh ? 0 : total,
+          _api?.params?.limit || api.params?.limit
+        );
+        if (can_next) {
+          params = {
+            limit,
+            offset,
+            page,
+          };
+        }
       }
-    }
 
-    ref.current = new AbortController();
-    const apiParams: IAPI = {
-      signal: ref.current?.signal,
-      method: "GET",
-      params,
-    };
-    merge(apiParams, api);
-    return apiParams;
-  };
+      ref.current = new AbortController();
+      const apiParams: IAPI = {
+        signal: ref.current?.signal,
+        method: "GET",
+        params,
+      };
+      merge(apiParams, api, _api);
+
+      Object.keys(apiParams.params).forEach((key) => {
+        if (
+          !apiParams.params[key] ||
+          (Array.isArray(apiParams.params[key]) &&
+            !apiParams.params[key].length)
+        ) {
+          delete apiParams.params[key];
+        }
+      });
+
+      return apiParams;
+    },
+    [data, total]
+  );
 
   const loadCache = async () => {
-    let url = buildUrl();
+    let url = buildUrl({});
     let ready = false;
     if (!disableCache) {
       const res = await Storage.get(storageKey);
@@ -130,7 +173,7 @@ const useFetchData = <S = undefined>(
 
   const saveCache = async (data: any, total: number) => {
     if (!disableCache) {
-      let url = buildUrl();
+      let url = buildUrl({});
       const cache: any[] = (await Storage.get(storageKey)) || [];
       let idx = cache.findIndex(
         (x) =>
@@ -155,7 +198,9 @@ const useFetchData = <S = undefined>(
   const updateState = useCallback(
     (state: React.SetStateAction<TFetchData<S>>) => {
       if (typeof state === "object") {
-        setdata(cloneDeep(data));
+        const ndata = cloneDeep(state);
+        setdata(cloneDeep(ndata.data));
+        if (ndata?.total) settoal(ndata?.total);
       } else if (typeof state === "function") {
         const ndata = state({
           data,
@@ -168,20 +213,20 @@ const useFetchData = <S = undefined>(
     [data, total]
   );
 
-  const fetch = (refresh: boolean) => {
+  const fetch = (refresh: boolean, api: IAPI) => {
     return new Promise((resolve, reject) => {
       try {
-        const apiParams = getAPIParams();
-        console.log("useFetchData: ", buildUrl());
+        const apiParams = getAPIParams(api, refresh);
+        console.log("useFetchData: ", apiParams);
 
         if (isRefresh || isLoading || hasCache === undefined) {
-          reject(`'${apiParams.url}', already runing.`);
+          // reject(`'${apiParams.url}', already runing.`);
           return;
         }
-        if (Array.isArray(data) && !refresh) {
+        if (Array.isArray(data) && refresh === false) {
           const { can_next } = generatePaging(data.length, total);
           if (!can_next) {
-            reject(`'${apiParams.url}', Maximum data reached.`);
+            // reject(`'${apiParams.url}', Maximum data reached.`);
             return;
           }
         }
@@ -190,34 +235,37 @@ const useFetchData = <S = undefined>(
           ndata = refresh ? cloneDeep(initialData) : cloneDeep(data);
 
         if (refresh) {
-          if (!hasCache) {
+          if (!!disableCache || (!disableCache && !hasCache)) {
             _isRefresh = true;
-            setrefresh(_isRefresh);
+            setrefresh(true);
           }
         } else {
           _isLoading = true;
-          setloading(_isLoading);
+          setloading(true);
         }
 
         API(apiParams)
           .then((res) => {
             let rdata = res;
             if (!!callback) {
-              rdata = callback(res);
+              let cdata = callback(res);
+              if (!!cdata) {
+                rdata = cdata;
+              }
             }
 
             if (!!rdata) {
               let data = rdata.data;
-              const total = rdata.total;
-              if (!disablePaging && Array.isArray(ndata)) {
+              let ntotal = rdata?.total || 0;
+              if (refresh === false && !disablePaging && Array.isArray(ndata)) {
                 data = cloneDeep(ndata.concat(data));
               }
               if (data !== undefined) {
                 setdata(data);
-                saveCache(data, total);
+                saveCache(data, ntotal);
               }
-              if (total !== undefined) {
-                settoal(total);
+              if (ntotal !== undefined && ntotal !== total) {
+                settoal(ntotal);
               }
             } else if (rdata !== undefined) {
               setdata(rdata);
@@ -241,9 +289,9 @@ const useFetchData = <S = undefined>(
 
   const memoFetch = useMemo(
     () =>
-      (refresh: boolean = true) =>
-        fetch(refresh),
-    [hasCache, data]
+      (refresh: boolean = true, api: IAPI = {}) =>
+        fetch(refresh, api),
+    [hasCache, data, config]
   );
 
   useEffect(() => {

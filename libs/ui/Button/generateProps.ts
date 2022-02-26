@@ -12,6 +12,7 @@ import { trimObject } from "../../utils/misc";
 import tailwind, {
   getColor,
   parseStyleToObject,
+  trimClassName,
   trimStyle,
   trimTextStyle,
 } from "../../utils/styles";
@@ -122,9 +123,7 @@ const getRightIconProps = (props: IButton) => {
 
 const getSpinnerProps = (props: IButton): ISpinner => {
   const cprops = { ...props.spinnerProps };
-  let className = `${!!props.children || props.label ? "mr-1" : ""} ${
-    cprops.className || ""
-  }`;
+  let className = `${cprops.className || ""}`;
   const textStyle = generateTextStyle(props, false, className);
   const color = textStyle.color;
 
@@ -178,10 +177,7 @@ const generateOriginalStyle = (props: IButton) => {
   className = `${className} ${props.className || ""}`;
 
   if (!!className) {
-    const arrClass = className.split(" ");
-    className = arrClass
-      .filter((x) => x.indexOf("active") === -1 && x.indexOf("disabled") === -1)
-      .join(" ");
+    className = trimClassName(className, ["error", "focus", "active"]);
   }
 
   Object.assign(style, tailwind(className), parseStyleToObject(props.style));
@@ -399,7 +395,7 @@ const generateTextStyle = (
   className = ""
 ) => {
   let style = generateStyle(props);
-  const activeStyle = generateActiveStyle(props);
+  let activeStyle = generateActiveStyle(props);
 
   const ex = [
     "margin",
@@ -418,6 +414,7 @@ const generateTextStyle = (
     "bottom",
   ];
   style = trimStyle(style, ex);
+
   Object.assign(
     style,
     {
@@ -435,7 +432,6 @@ const generateTextStyle = (
   if (props.isActive) {
     let styleActive: any = cloneDeep(style);
     Object.assign(styleActive, activeStyle);
-    styleActive = trimStyle(styleActive, ex);
     return styleActive;
   } else if (!props.disabled && isPress) {
     return stylePress;
