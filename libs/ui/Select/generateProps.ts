@@ -332,25 +332,29 @@ export const getButtonProps = (
 
   let className = `m-0 p-0`;
   if (typeof Themes.inputWrapperStyle === "string") {
-    let cclassName = trimClassName(Themes.inputWrapperStyle, [
-      "error",
-      "focus",
-      "active",
-    ]);
-    className = `${className} ${cclassName}`;
+    className = `${className} ${Themes.inputWrapperStyle || ""}`;
   }
   if (!props.value) {
     if (typeof Themes.placeholderStyle === "string") {
       className = `${className} ${Themes.placeholderStyle}`;
     }
   }
-  className = `${className} ${get(props, "className", "")}`;
+  let eclassName = "";
+  if (!!props.isError) {
+    eclassName = className
+      .split(" ")
+      .filter((x) => x.includes("error"))
+      .map((x) => x.replace("error:", ""))
+      .join(" ");
+  }
+  className = `${className} ${eclassName} ${get(props, "className", "")}`;
+  className = trimClassName(className, ["error", "focus", "active"]);
 
   const labelProps: IText = get(props, "labelProps", {});
   let lstyle: TextStyle = {
     lineHeight: 40,
   };
-  let lclassName = `flex-grow ${get(props, "labelProps.className", "")}`;
+  let lclassName = `flex-grow`;
   if (typeof Themes.inputStyle === "string") {
     lclassName = `${lclassName} ${Themes.inputStyle}`;
   }
@@ -364,8 +368,7 @@ export const getButtonProps = (
   if (!props.value) {
     lclassName = `${lclassName} text-gray-400`;
   }
-  lclassName = `${lclassName}`;
-  labelProps.className = lclassName;
+  lclassName = `${lclassName} ${get(props, "labelProps.className", "")}`;
   Object.assign(lstyle, parseStyleToObject(get(props, "labelProps.style", {})));
 
   return {
@@ -530,17 +533,17 @@ export const getItemProps = (
 
   className = `${className} ${get(props, "itemProps.className", "")}`;
 
-  const labelProps: IText = get(props, "labelProps", {});
+  const labelProps: IText = get(props, "itemProps.labelProps", {});
   let lclassName = `flex-grow p-1 py-2 ${get(
     props,
-    "labelProps.className",
+    "itemProps.labelProps.className",
     ""
   )}`;
   labelProps.className = lclassName;
 
   let renderItem = get(props, "listProps.renderItem", undefined);
   if (renderItem) {
-    cprops.children = renderItem;
+    cprops.children = renderItem(item);
   }
 
   return {

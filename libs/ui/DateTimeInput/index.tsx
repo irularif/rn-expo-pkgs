@@ -10,6 +10,7 @@ export interface IDateTimeInput extends IButton {
   formatValue?: string;
   formatLabel?: string;
   mode?: "datetime" | "date" | "time";
+  isError?: boolean;
 }
 
 const DateTimeInput = (props: IDateTimeInput) => {

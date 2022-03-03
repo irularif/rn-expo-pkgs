@@ -23,6 +23,9 @@ const getLabel = (props: IDateTimeInput) => {
         break;
       case "time":
         label = dateFormat(props.value, "HH:mm");
+        if (!label) {
+          label = props.value;
+        }
         break;
       default:
         label = dateFormat(props.value, "yyyy/MM/dd HH:mm:ss");
@@ -43,6 +46,8 @@ const parseValue = (props: IDateTimeInput, value: Date) => {
         nvalue = dateFormat(value, "yyyy-MM-dd");
         break;
       case "time":
+        nvalue = dateFormat(value, "HH:mm");
+        break;
       case "datetime":
       default:
         nvalue = dateFormat(value, "yyyy-MM-dd HH:mm:ss");
@@ -79,19 +84,23 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
   };
   let className = `m-0 p-0 px-2`;
   if (typeof Themes.inputWrapperStyle === "string") {
-    let cclassName = trimClassName(Themes.inputWrapperStyle, [
-      "error",
-      "focus",
-      "active",
-    ]);
-    className = `${className} ${cclassName}`;
+    className = `${className} ${Themes.inputWrapperStyle || ""}`;
   }
   if (!props.value) {
     if (typeof Themes.placeholderStyle === "string") {
       className = `${className} ${Themes.placeholderStyle}`;
     }
   }
-  className = `${className} ${get(props, "className", "")}`;
+  let eclassName = "";
+  if (!!props.isError) {
+    eclassName = className
+      .split(" ")
+      .filter((x) => x.includes("error"))
+      .map((x) => x.replace("error:", ""))
+      .join(" ");
+  }
+  className = `${className} ${eclassName} ${get(props, "className", "")}`;
+  className = trimClassName(className, ["error", "focus", "active"]);
 
   const labelProps: IText = get(props, "labelProps", {});
   const lstyle = {

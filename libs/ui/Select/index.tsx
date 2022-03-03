@@ -45,6 +45,7 @@ export interface ISelect extends Omit<IButton, "suffix"> {
   editable?: boolean;
   placeholder?: string;
   suffix?: Partial<IIcon | JSX.Element | undefined>;
+  isError?: boolean;
 }
 
 const Select = (props: ISelect) => {

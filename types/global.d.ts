@@ -135,3 +135,12 @@ export interface IAlertStore extends IAlert {
   visible: boolean;
   mode: "alert" | "prompt";
 }
+
+export interface IConfigSize {
+  xs?: any;
+  sm?: any;
+  md?: any;
+  lg?: any;
+}
+
+type TSize = "xs" | "sm" | "md" | "lg";
