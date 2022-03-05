@@ -1,11 +1,35 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { get } from "lodash";
 import useRootNavigation from "pkgs/libs/hooks/useRootNavigation";
+import { useCallback } from "react";
+import { BackHandler } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ITopBar } from ".";
 import { trimObject } from "../../utils/misc";
 import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { IButton } from "../Button";
 import { IView } from "../View";
+
+export const init = (props: ITopBar) => {
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (!!props.backButtonProps?.onPress) {
+          props.backButtonProps?.onPress({} as any);
+        }
+
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => backHandler.remove();
+    }, [])
+  );
+};
 
 const getTopBarProps = (props: ITopBar) => {
   const inset = useSafeAreaInsets();

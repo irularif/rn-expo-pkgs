@@ -177,7 +177,12 @@ const generateOriginalStyle = (props: IButton) => {
   className = `${className} ${props.className || ""}`;
 
   if (!!className) {
-    className = trimClassName(className, ["error", "focus", "active"]);
+    className = trimClassName(className, [
+      "error",
+      "focus",
+      "active",
+      "disabled",
+    ]);
   }
 
   Object.assign(style, tailwind(className), parseStyleToObject(props.style));
