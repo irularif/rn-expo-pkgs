@@ -135,7 +135,7 @@ const getButtonProps = (props: IDateTimeInput, visibleDateState: any) => {
 
 const getDateTimeProps = (props: IDateTimeInput, visibleDateState: any) => {
   const [visible, setvisible] = visibleDateState;
-  const cprops = { ...props.dateTimeProps };
+  const cprops = { value: props.value, ...props.dateTimeProps };
   cprops.mode = props.mode;
   const onChange = (ev: any, value: Date) => {
     if (props.onChange) {

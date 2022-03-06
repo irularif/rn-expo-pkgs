@@ -1,4 +1,5 @@
-import { cloneDeep, merge } from "lodash";
+import { useFocusEffect } from "@react-navigation/native";
+import { cloneDeep, isNull, isUndefined, merge } from "lodash";
 import API, { IAPI } from "pkgs/libs/utils/api";
 import Storage from "pkgs/libs/utils/storage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -16,6 +17,7 @@ export interface IFetchConfig {
   disableCache?: boolean;
   disableFetchOnInit?: boolean;
   cacheKey?: string;
+  refreshOnFocus?: boolean;
 }
 
 export type TFetchCallback<S> = (res: any) =>
@@ -47,7 +49,7 @@ export const generatePaging = (
 ) => {
   const page = Math.floor(total_data / limit);
   const curr_page = Math.floor(current_total / limit);
-  const offset = current_total;
+  const offset = current_total || 0;
 
   return {
     can_next: !total_data ? true : curr_page < page,
@@ -63,8 +65,14 @@ const useFetchData = <S = undefined>(
   config: IFetchConfig,
   callback?: TFetchCallback<S>
 ): IFetchData<S> => {
-  const { disablePaging, disableCache, disableFetchOnInit, api, cacheKey } =
-    config;
+  const {
+    disablePaging,
+    disableCache,
+    disableFetchOnInit,
+    api,
+    cacheKey,
+    refreshOnFocus,
+  } = config;
   const ref = useRef<AbortController>();
   const controller = ref.current;
   const [isReady, setisready] = useState<boolean>(false);
@@ -103,11 +111,11 @@ const useFetchData = <S = undefined>(
           _api?.params?.limit || api.params?.limit
         );
         if (can_next) {
-          params = {
+          Object.assign(params, {
             limit,
             offset,
             page,
-          };
+          });
         }
       }
 
@@ -121,7 +129,8 @@ const useFetchData = <S = undefined>(
 
       Object.keys(apiParams.params).forEach((key) => {
         if (
-          !apiParams.params[key] ||
+          isNull(apiParams.params[key]) ||
+          isUndefined(apiParams.params[key]) ||
           (Array.isArray(apiParams.params[key]) &&
             !apiParams.params[key].length)
         ) {
@@ -302,11 +311,16 @@ const useFetchData = <S = undefined>(
     };
   }, []);
 
-  useEffect(() => {
-    if (!disableFetchOnInit && hasCache !== undefined) {
-      memoFetch();
-    }
-  }, [hasCache]);
+  useFocusEffect(
+    useCallback(() => {
+      if (
+        (!disableFetchOnInit && hasCache !== undefined && !refreshOnFocus) ||
+        (hasCache !== undefined && isReady && !!refreshOnFocus)
+      ) {
+        memoFetch(true);
+      }
+    }, [isReady, hasCache])
+  );
 
   return {
     state: {

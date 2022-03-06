@@ -58,7 +58,7 @@ export const init = (props: IImage) => {
     const uripath = uri?.split("/");
     fileName = uripath[uripath.length - 1];
     if (uri.indexOf("file://") === 0) {
-      cacheFileUri = uri;
+      cacheFileUri = `${uri}`;
     }
   }
   const [imgUrl, setUrl] = useState(`${cacheFileUri}`);
@@ -68,11 +68,11 @@ export const init = (props: IImage) => {
       setstatus("error");
       return;
     }
-
     if (
-      typeof props.source === "object" &&
-      !!uri &&
-      uri.indexOf("file://") === 0
+      typeof props.source === "number" ||
+      (typeof props.source === "object" &&
+        !!uri &&
+        uri.indexOf("file://") === 0)
     ) {
       setstatus("ready");
       return;
@@ -111,7 +111,7 @@ export const init = (props: IImage) => {
 const getImageProps = (props: IImage, imgUrl: string) => {
   const style = generateStyle(props);
   let source = props.source;
-  if (!!imgUrl) {
+  if (!!imgUrl && typeof props.source !== "number") {
     source = {
       uri: imgUrl,
     };

@@ -75,13 +75,13 @@ const DatePickerIOS = (props: any) => {
             label="CANCEL"
             variant="link"
             onPress={onCancel}
-            className="py-2 w-20"
+            className="py-2"
           />
           <Button
             label="OK"
             variant="link"
             onPress={onSubmit}
-            className="py-2 w-20"
+            className="py-2"
           />
         </View>
       </Modal>
