@@ -20,7 +20,11 @@ export interface IFetchConfig {
   refreshOnFocus?: boolean;
 }
 
-export type TFetchCallback<S> = (res: any) =>
+export type TFetchCallback<S> = (
+  res: any,
+  data?: S,
+  api?: IAPI
+) =>
   | {
       data: S;
       total?: number;
@@ -257,7 +261,7 @@ const useFetchData = <S = undefined>(
           .then((res) => {
             let rdata = res;
             if (!!callback) {
-              let cdata = callback(res);
+              let cdata = callback(res, data, apiParams);
               if (!!cdata) {
                 rdata = cdata;
               }
