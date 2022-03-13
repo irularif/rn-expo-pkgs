@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import mime from "mime-types";
 
-const uriToFile = async (path: string) => {
+const uriToFile = (path: string) => {
   if (!path) {
     return null;
   }

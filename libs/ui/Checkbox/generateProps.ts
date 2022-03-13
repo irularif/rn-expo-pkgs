@@ -1,5 +1,8 @@
 import { trimObject } from "../../utils/misc";
-import tailwind, { parseStyleToObject } from "../../utils/styles";
+import tailwind, {
+  parseStyleToObject,
+  trimClassName,
+} from "../../utils/styles";
 import { get } from "lodash";
 import { ICheckbox } from ".";
 import { IButton } from "../Button";
@@ -73,6 +76,12 @@ const generateStyle = (props: ICheckbox) => {
     .filter((x) => ["border", "text"].indexOf(x))
     .join(" ");
   className = `bg-white ${className}`;
+  className = trimClassName(className, [
+    "error",
+    "focus",
+    "active",
+    "disabled",
+  ]);
   Object.assign(style, tailwind(className), parseStyleToObject(props.style));
 
   return style;

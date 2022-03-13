@@ -13,7 +13,7 @@ import Icon, { IIcon } from "../Icon";
 export interface IImage extends ImageProps {
   componentRef?: any;
   className?: string;
-  cacheKey?: string;
+  // cacheKey?: string;
   wrapperProps?: IView;
   shimmerProps?: IShimmer;
   errorProps?: IIcon;
@@ -32,7 +32,7 @@ const Image = (props: IImage) => {
   );
 };
 
-const RenderStatus = (props: any) => {
+const RenderStatus = memo((props: any) => {
   const shimmerProps = getShimmerProps(props);
   const errorProps = getErrorProps(props);
 
@@ -43,6 +43,6 @@ const RenderStatus = (props: any) => {
   }
 
   return null;
-};
+});
 
 export default memo(Image);

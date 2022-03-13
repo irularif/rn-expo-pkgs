@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { IComponent } from "pkgs/types/global";
-import React from "react";
+import React, { memo } from "react";
 import { Animated, EasingFunction } from "react-native";
 import View from "../View";
 import { getViewProps, initProps } from "./generateProps";
@@ -45,4 +45,4 @@ const Shimmer = (props: IShimmer) => {
   );
 };
 
-export default Shimmer;
+export default memo(Shimmer);

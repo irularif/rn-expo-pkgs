@@ -30,7 +30,7 @@ const useRootNavigation = () => {
         }
       });
     },
-    [nav.getRootState, nav.dispatch]
+    [nav]
   );
 
   const replace = useCallback(
@@ -48,7 +48,7 @@ const useRootNavigation = () => {
         }
       });
     },
-    [nav.getRootState, nav.dispatch]
+    [nav]
   );
 
   return {

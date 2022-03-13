@@ -1,4 +1,4 @@
-import { get, set } from "lodash";
+import { get, merge, set } from "lodash";
 import { useLibsDispatch, useLibsSelector } from "pkgs/libs/hooks/useLibsStore";
 import { ConfirmationStateAction } from "pkgs/system/store/confirmation";
 import { useEffect, useState } from "react";
@@ -44,7 +44,19 @@ export const getModalProps = (visibleState: any, close: any) => {
   const [visible] = visibleState;
   const state = useLibsSelector((state) => state.confirmation);
   const cprops = get(state, "props.modalProps", {});
-  const className = `p-4 m-6 ${get(state, "props.modalProps.className", "")}`;
+  const className = `p-4 m-6 z-40 ${get(
+    state,
+    "props.modalProps.className",
+    ""
+  )}`;
+  const backdropProps = get(state, "props.modalProps.backdropProps", {});
+  const panelProps = get(state, "props.modalProps.panelProps", {});
+  merge(backdropProps, {
+    className: `z-40 ${backdropProps.className || ""}`,
+  });
+  merge(panelProps, {
+    className: `z-40 ${panelProps.className || ""}`,
+  });
   const onClose = (e: any) => {
     close();
     setTimeout(() => {
@@ -56,6 +68,8 @@ export const getModalProps = (visibleState: any, close: any) => {
 
   return {
     ...cprops,
+    backdropProps,
+    panelProps,
     className,
     position: "center",
     visible,

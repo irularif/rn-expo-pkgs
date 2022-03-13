@@ -1,5 +1,5 @@
 import { IComponent } from "../../../types/global";
-import React from "react";
+import React, { memo } from "react";
 import { FlatList, FlatListProps, Animated } from "react-native";
 import getListProps from "./generateProps";
 
@@ -21,4 +21,4 @@ const List = (props: IList) => {
   return <Component {...listProps} />;
 };
 
-export default List;
+export default memo(List);

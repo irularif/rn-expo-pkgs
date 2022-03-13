@@ -2,8 +2,10 @@ import tailwind, { parseStyleToObject } from "../../utils/styles";
 import { get } from "lodash";
 import { IImage } from ".";
 import * as FileSystem from "expo-file-system";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Icon404 from "../../../assets/images/404.svg";
+
+const dir = FileSystem.cacheDirectory + "images/";
 
 const checkImageInCache = async (uri: string) => {
   try {
@@ -15,10 +17,14 @@ const checkImageInCache = async (uri: string) => {
 
 const cacheImage = async (link: string, localUrl: string, callback: any) => {
   try {
+    await ensureDirExists(dir);
+
     const downloadImage = FileSystem.createDownloadResumable(
       link,
       localUrl,
-      {},
+      {
+        cache: false,
+      },
       callback
     );
 
@@ -47,23 +53,22 @@ const ensureDirExists = async (dir: string) => {
 };
 
 export const init = (props: IImage) => {
-  const statusState = useState("loading");
-  const [status, setstatus] = statusState;
+  const [status, setstatus] = useState("ready");
   const uri = get(props, "source.uri", "");
   let fileName = "";
-  const cacheKey = props.cacheKey || fileName;
-  const dir = FileSystem.cacheDirectory + "images/";
-  let cacheFileUri = `${dir}${cacheKey}`;
+  let cacheFileUri = `${dir}`;
   if (!!uri) {
     const uripath = uri?.split("/");
     fileName = uripath[uripath.length - 1];
     if (uri.indexOf("file://") === 0) {
-      cacheFileUri = `${uri}`;
+      cacheFileUri = uri;
+    } else {
+      cacheFileUri = `${cacheFileUri}${fileName}`;
     }
   }
   const [imgUrl, setUrl] = useState(`${cacheFileUri}`);
 
-  const init = async () => {
+  const init = useCallback(async () => {
     if (typeof props.source === "object" && !!uri && !fileName) {
       setstatus("error");
       return;
@@ -78,29 +83,29 @@ export const init = (props: IImage) => {
       return;
     }
 
-    await ensureDirExists(dir);
     let imgInCache = await checkImageInCache(cacheFileUri);
+    // if (fileName == "semen_1.png") console.log(imgInCache);
 
     if (!!uri && (imgInCache === false || !imgInCache?.exists)) {
+      setstatus("loading");
       const encodedLink = encodeURI(uri);
       let cached = await cacheImage(encodedLink, cacheFileUri, (e: any) => {});
-      if (!cached) {
-        setUrl(uri);
+      if (!!cached) {
+        setUrl("");
+        setUrl(cached);
+      } else {
+        setUrl("");
         setstatus("error");
         return;
-      } else {
-        if (status !== "ready") {
-          setstatus("ready");
-        }
       }
     }
 
     setstatus("ready");
-  };
+  }, []);
 
   useEffect(() => {
     init();
-  }, [uri]);
+  }, []);
 
   return {
     imgUrl,

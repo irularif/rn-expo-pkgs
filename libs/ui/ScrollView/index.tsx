@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { memo, ReactNode } from "react";
 import {
   KeyboardAvoidingView,
   KeyboardAvoidingViewProps,
@@ -42,4 +42,4 @@ const ScrollView = (props: IScrollView) => {
   );
 };
 
-export default ScrollView;
+export default memo(ScrollView);

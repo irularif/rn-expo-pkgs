@@ -43,7 +43,7 @@ const useScreen = () => {
     setorientation(getOrientation(screen));
   };
 
-  const select = useCallback(
+  const responsiveValue = useCallback(
     (params: IConfigSize) => {
       let selected: any;
       // @ts-ignore
@@ -85,7 +85,7 @@ const useScreen = () => {
     screen,
     window,
     orientation,
-    select,
+    responsiveValue,
   };
 };
 

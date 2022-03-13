@@ -1,4 +1,3 @@
-import { useFocusEffect } from "@react-navigation/native";
 import { cloneDeep, isNull, isUndefined, merge } from "lodash";
 import API, { IAPI } from "pkgs/libs/utils/api";
 import Storage from "pkgs/libs/utils/storage";
@@ -40,7 +39,7 @@ export interface IFetchState<S> {
   isRefresh: boolean;
 }
 
-export interface IFetchData<S> {
+export interface IUseFetchData<S> {
   state: IFetchState<S>;
   setState: React.Dispatch<React.SetStateAction<TFetchData<S>>>;
   fetch: (refresh?: boolean, api?: IAPI) => Promise<any>;
@@ -68,7 +67,7 @@ const useFetchData = <S = undefined>(
   initialData: S,
   config: IFetchConfig,
   callback?: TFetchCallback<S>
-): IFetchData<S> => {
+): IUseFetchData<S> => {
   const {
     disablePaging,
     disableCache,
@@ -87,23 +86,26 @@ const useFetchData = <S = undefined>(
   const ninitialData = cloneDeep(initialData);
   const [data, setdata] = useState<S>(ninitialData);
 
-  const buildUrl = (_api: IAPI) => {
-    const params = api.params || {};
-    const _params = _api?.params || {};
-    Object.assign(params, _params);
-    let url = api.url || "";
-    if (!!params) {
-      url += "?";
-      Object.keys(params).forEach((key, idx) => {
-        if (!!params[key]) {
-          if (idx > 0) url += "&";
-          url += `${key}=${params[key]}`;
-        }
-      });
-    }
+  const buildUrl = useCallback(
+    (_api: IAPI) => {
+      const params = api.params || {};
+      const _params = _api?.params || {};
+      Object.assign(params, _params);
+      let url = api.url || "";
+      if (!!params) {
+        url += "?";
+        Object.keys(params).forEach((key, idx) => {
+          if (!!params[key]) {
+            if (idx > 0) url += "&";
+            url += `${key}=${params[key]}`;
+          }
+        });
+      }
 
-    return url;
-  };
+      return url;
+    },
+    [api]
+  );
 
   const getAPIParams = useCallback(
     (_api: IAPI, refresh: boolean): IAPI => {
@@ -144,10 +146,10 @@ const useFetchData = <S = undefined>(
 
       return apiParams;
     },
-    [data, total]
+    [data, total, api]
   );
 
-  const loadCache = async () => {
+  const loadCache = useCallback(async () => {
     let url = buildUrl({});
     let ready = false;
     if (!disableCache) {
@@ -182,9 +184,9 @@ const useFetchData = <S = undefined>(
     if (!!disableFetchOnInit || ready) {
       setisready(true);
     }
-  };
+  }, []);
 
-  const saveCache = async (data: any, total: number) => {
+  const saveCache = useCallback(async (data: any, total: number) => {
     if (!disableCache) {
       let url = buildUrl({});
       const cache: any[] = (await Storage.get(storageKey)) || [];
@@ -206,7 +208,7 @@ const useFetchData = <S = undefined>(
       }
       Storage.set(storageKey, cache);
     }
-  };
+  }, []);
 
   const updateState = useCallback(
     (state: React.SetStateAction<TFetchData<S>>) => {
@@ -223,88 +225,69 @@ const useFetchData = <S = undefined>(
         if (ndata?.total) settoal(ndata?.total);
       }
     },
-    [data, total]
+    []
   );
 
-  const fetch = (refresh: boolean, api: IAPI) => {
-    return new Promise((resolve, reject) => {
-      try {
-        const apiParams = getAPIParams(api, refresh);
-        console.log("useFetchData: ", apiParams);
+  const fetch = useCallback(
+    (refresh: boolean = true, api: IAPI = {}) => {
+      let _isRefresh: boolean = isRefresh,
+        _isLoading: boolean = isLoading,
+        ndata = refresh ? cloneDeep(initialData) : cloneDeep(data);
 
-        if (isRefresh || isLoading || hasCache === undefined) {
-          // reject(`'${apiParams.url}', already runing.`);
-          return;
-        }
-        if (Array.isArray(data) && refresh === false) {
-          const { can_next } = generatePaging(data.length, total);
-          if (!can_next) {
-            // reject(`'${apiParams.url}', Maximum data reached.`);
+      return new Promise(async (resolve, reject) => {
+        try {
+          const apiParams = getAPIParams(api, refresh);
+
+          if (isRefresh || isLoading || hasCache === undefined) {
             return;
           }
-        }
-        let _isRefresh: boolean = isRefresh,
-          _isLoading: boolean = isLoading,
-          ndata = refresh ? cloneDeep(initialData) : cloneDeep(data);
-
-        if (refresh) {
-          if (!!disableCache || (!disableCache && !hasCache)) {
-            _isRefresh = true;
-            setrefresh(true);
+          if (Array.isArray(data) && refresh === false) {
+            const { can_next } = generatePaging(data.length, total);
+            if (!can_next) {
+              return;
+            }
           }
-        } else {
-          _isLoading = true;
-          setloading(true);
+
+          if (refresh) {
+            if (!!disableCache || (!disableCache && !hasCache)) {
+              _isRefresh = true;
+              setrefresh(true);
+            }
+          } else {
+            _isLoading = true;
+            setloading(true);
+          }
+
+          // console.log("useFetchData: ", apiParams);
+          const res = await API(apiParams);
+          let rdata: any = res;
+          if (!!callback) {
+            rdata = callback(res, data, apiParams);
+          }
+
+          let cdata = rdata?.data;
+          let ntotal = rdata?.total || 0;
+          if (refresh === false && !disablePaging && Array.isArray(ndata)) {
+            cdata = cloneDeep(ndata.concat(cdata));
+          }
+          if (cdata !== undefined) {
+            setdata(cdata);
+            saveCache(cdata, ntotal);
+          }
+          if (ntotal !== undefined && ntotal !== total) {
+            settoal(ntotal);
+          }
+          resolve(res);
+        } catch (error) {
+          reject(error);
+        } finally {
+          if (_isRefresh) setrefresh(false);
+          if (_isLoading) setloading(false);
+          if (!isReady) setisready(true);
         }
-
-        API(apiParams)
-          .then((res) => {
-            let rdata = res;
-            if (!!callback) {
-              let cdata = callback(res, data, apiParams);
-              if (!!cdata) {
-                rdata = cdata;
-              }
-            }
-
-            if (!!rdata) {
-              let data = rdata.data;
-              let ntotal = rdata?.total || 0;
-              if (refresh === false && !disablePaging && Array.isArray(ndata)) {
-                data = cloneDeep(ndata.concat(data));
-              }
-              if (data !== undefined) {
-                setdata(data);
-                saveCache(data, ntotal);
-              }
-              if (ntotal !== undefined && ntotal !== total) {
-                settoal(ntotal);
-              }
-            } else if (rdata !== undefined) {
-              setdata(rdata);
-            }
-
-            resolve(res);
-          })
-          .catch((e) => {
-            reject(e);
-          })
-          .finally(() => {
-            if (_isRefresh) setrefresh(false);
-            if (_isLoading) setloading(false);
-            if (!isReady) setisready(true);
-          });
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
-
-  const memoFetch = useMemo(
-    () =>
-      (refresh: boolean = true, api: IAPI = {}) =>
-        fetch(refresh, api),
-    [hasCache, data, config]
+      });
+    },
+    [isRefresh, isLoading, callback, data, total, hasCache]
   );
 
   useEffect(() => {
@@ -315,16 +298,16 @@ const useFetchData = <S = undefined>(
     };
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
+  useEffect(() => {
+    if (hasCache !== undefined) {
       if (
-        (!disableFetchOnInit && hasCache !== undefined && !refreshOnFocus) ||
-        (hasCache !== undefined && isReady && !!refreshOnFocus)
+        (!disableFetchOnInit && !refreshOnFocus) ||
+        (isReady && !!refreshOnFocus)
       ) {
-        memoFetch(true);
+        fetch(true);
       }
-    }, [isReady, hasCache])
-  );
+    }
+  }, [isReady, hasCache]);
 
   return {
     state: {
@@ -335,7 +318,7 @@ const useFetchData = <S = undefined>(
       total,
     },
     setState: updateState,
-    fetch: memoFetch,
+    fetch,
   };
 };
 

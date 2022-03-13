@@ -10,8 +10,8 @@ const PortalProviderComponent = ({ children }: any) => {
   return (
     <PortalContext.Provider value={portalState}>
       {children}
-      <PortalHost name="libs" />
       <PortalHost name="root" />
+      <PortalHost name="libs" />
     </PortalContext.Provider>
   );
 };
