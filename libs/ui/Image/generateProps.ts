@@ -16,21 +16,19 @@ const checkImageInCache = async (uri: string) => {
   }
 };
 
-const cacheImage = async (link: string, localUrl: string, callback: any) => {
+const cacheImage = async (link: string, localUrl: string, callback?: any) => {
   try {
     await ensureDirExists(dir);
 
     const downloadImage = FileSystem.createDownloadResumable(
       link,
       localUrl,
-      {
-        cache: false,
-      },
+      {},
       callback
     );
 
     const res = await downloadImage.downloadAsync();
-    if (!!res && res?.status === 200) {
+    if (!!res && (res.status === 200 || res.status === 416)) {
       return res.uri;
     } else {
       let imgInCache = await checkImageInCache(localUrl);
@@ -89,12 +87,11 @@ export const init = (props: IImage) => {
     }
 
     let imgInCache = await checkImageInCache(cacheFileUri);
-    // if (fileName == "semen_1.png") console.log(imgInCache);
 
     if (!!uri && (imgInCache === false || !imgInCache?.exists)) {
       setstatus("loading");
       const encodedLink = encodeURI(uri);
-      let cached = await cacheImage(encodedLink, cacheFileUri, (e: any) => {});
+      let cached = await cacheImage(encodedLink, cacheFileUri);
       if (!!cached) {
         setUrl("");
         setUrl(cached);
@@ -106,7 +103,7 @@ export const init = (props: IImage) => {
     }
 
     setstatus("ready");
-  }, [uri]);
+  }, []);
 
   useEffect(() => {
     init();
