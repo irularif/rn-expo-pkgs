@@ -4,6 +4,7 @@ import { IImage } from ".";
 import * as FileSystem from "expo-file-system";
 import { useCallback, useEffect, useState } from "react";
 import Icon404 from "../../../assets/images/404.svg";
+import mime from "mime-types";
 
 const dir = FileSystem.cacheDirectory + "images/";
 
@@ -65,6 +66,10 @@ export const init = (props: IImage) => {
     } else {
       cacheFileUri = `${cacheFileUri}${fileName}`;
     }
+    const type = mime.lookup(fileName);
+    if (!type || !type.includes("image")) {
+      fileName = "";
+    }
   }
   const [imgUrl, setUrl] = useState(`${cacheFileUri}`);
 
@@ -101,11 +106,11 @@ export const init = (props: IImage) => {
     }
 
     setstatus("ready");
-  }, []);
+  }, [uri]);
 
   useEffect(() => {
     init();
-  }, []);
+  }, [uri]);
 
   return {
     imgUrl,
